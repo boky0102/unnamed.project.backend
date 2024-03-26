@@ -1,0 +1,28 @@
+{
+  "name": "uniprojh",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boky0102/unnamed.project.backend.git"
+  },
+  "author": "Borna Ivankovic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boky0102/unnamed.project.backend/issues"
+  },
+  "homepage": "https://github.com/boky0102/unnamed.project.backend#readme",
+  "devDependencies": {
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
