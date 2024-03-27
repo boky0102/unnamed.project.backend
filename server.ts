@@ -1,14 +1,14 @@
 require('dotenv').config();
 import express from 'express';
 import { Request, Response } from 'express';
-import { userController } from './routes/users';
+import { userRouter } from './routes/users';
 
 
 const app = express();
 
 app.use(express.json()); // Parse incoming requests data
 
-app.use("/users", userController); //endpoint specified
+app.use("/users", userRouter); //endpoint specified
 
 app.get("/", (req: Request, res: Response) => {
     res.status(200).send("Route good");
