@@ -1,6 +1,6 @@
 # unnamed.project.backend
 
-This project requires lates node installed on your machine
+This project requires latest node version installed on your machine
 check:  https://nodejs.org/en
 
 To initialize project, while being project folder run
@@ -11,3 +11,6 @@ Install ts node on your machine if not installed
 
 To spin up the server write into console
 ``` npm run dev ```
+
+To run the tests
+```npm run test```
