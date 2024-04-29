@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "npx tsc",
     "start": "node dist/index.js",
     "dev": "nodemon server.ts"
@@ -20,15 +20,21 @@
   },
   "homepage": "https://github.com/boky0102/unnamed.project.backend#readme",
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/pg": "^8.11.4",
-    "typescript": "^5.4.3"
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "@types/express": "^4.17.21",
+    "@types/supertest": "^6.0.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "nodemon": "^3.1.0",
     "pg": "^8.11.3",
+    "superagent": "^9.0.1",
+    "supertest": "^7.0.0",
     "ts-node": "^10.9.2"
   }
 }

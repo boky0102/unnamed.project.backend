@@ -9,3 +9,7 @@ export const getAllUsers = async (): Promise<User[]> => {
     client.release();
     return users;
 }
+
+export const registerUser = async (userData: User):Promise<void> => {
+
+}
