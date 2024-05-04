@@ -47,7 +47,9 @@ export const initializeDB = async () => {
                 username TEXT NOT NULL,
                 auth_token TEXT,
                 field_of_study TEXT,
-                contributions INT
+                contributions INT,
+                avatarid TEXT,
+                discordid TEXT
             );`);
 
         // creates subject table in database

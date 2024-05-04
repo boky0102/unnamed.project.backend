@@ -2,6 +2,9 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { userRouter } from './routes/users';
 import { defaultErrorHandler, httpExceptionHandler, logErrors } from './middleware/error.middleware';
+import { authRouter } from './routes/auth';
+import cors from 'cors';
+require('dotenv').config();
 
 
 /*
@@ -17,11 +20,18 @@ const app = express();
 
 app.use(express.json()); // Parse incoming requests data
 
+app.use(cors<Request>({
+    origin: process.env.FRONTEND_URL,
+    credentials: true
+}))
+
+
 app.use(logErrors); // middleware for logging errors
 app.use(httpExceptionHandler); // middleware for handling http errors
 app.use(defaultErrorHandler); // middleware for catching all other errors
 
 app.use("/users", userRouter); //endpoint specified
+app.use("/auth", authRouter);
 
 app.get("/", (req: Request, res: Response) => {
     res.status(200).send("Route good");
