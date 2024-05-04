@@ -3,10 +3,11 @@ import { HttpException } from "../Types/error";
 
 /*  this error handling middleware will be called first
     when function next(err) is called from controller.
-    it prints error stack trace and calles passes error to next
+    it prints error stack trace and passes error to the next
     error handling middleware
 */
 export const logErrors = (err: any, req: Request, res: Response, next: NextFunction) => {
+    console.log(err);
     console.error(err.stack);
     next(err);
 }
@@ -16,8 +17,8 @@ export const logErrors = (err: any, req: Request, res: Response, next: NextFunct
     this is error middleware that will be called second in
     the case of error being instance of HttpException.
     HttpException extends error with status code and therefore
-    can be used as response generator in the case of a error.
-    If error is not instance of HttpException handler is passing
+    can be used as response generator in the case of an error.
+    If error is not a instance of HttpException, handler is passing
     error to default error handler with function next(err)
 */
 export const httpExceptionHandler = (err: any, req: Request, res: Response, next: NextFunction) => {

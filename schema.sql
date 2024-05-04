@@ -5,7 +5,9 @@ CREATE TABLE Users(
                       username TEXT NOT NULL,
                       auth_token TEXT,
                       field_of_study TEXT,
-                      contributions INT
+                      contributions INT,
+                      discordID TEXT,
+                      avatarID TEXT
 );
 
 DROP TABLE IF EXISTS subject;

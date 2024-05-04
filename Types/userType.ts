@@ -1,8 +1,11 @@
 export interface User {
+  uid: string;
   username: string;
   token: string;
   fieldOfStudy: string;
   contributions: number;
+  discordid: string,
+  avatarid: string,
 }
 
 interface CompSciStudent extends User {
