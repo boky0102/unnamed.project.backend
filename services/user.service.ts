@@ -23,6 +23,8 @@ export const checkIfUserExistsByDiscordId = async( discordID: string):Promise<st
     const query = "SELECT discordid, uid FROM users WHERE discordid = $1";
     const values = [discordID];
 
+    client.release();
+
     const dbResponse = await client.query<User>(query, values);
     if(dbResponse.rows.length === 0){
         return undefined;
@@ -36,10 +38,12 @@ export const registerUser = async (userData: UserAuthData):Promise<string> => {
 
     const client = await pool.connect();
 
-    const query = "INSERT INTO users(username, discordID, avatarID, auth_token) VALUES ($1, $2, $3, $4) RETURNING uid";
+    const query = "INSERT INTO users(username, discordID, avatar, auth_token) VALUES ($1, $2, $3, $4) RETURNING uid";
     const values = [userData.username, userData.id, userData.avatar, userData.refresh_token];
 
     const dbres = await client.query<User>(query, values);
+
+    client.release();
 
     if(!dbres){
         throw new HttpException(500, "Failed to insert new user to db");
@@ -48,3 +52,29 @@ export const registerUser = async (userData: UserAuthData):Promise<string> => {
     }
 
 };
+
+// For testing purposes only
+export const insertUser = async (userData: User) => {
+
+    const db = await pool.connect();
+
+    const query = "INSERT INTO users(username, auth_token, field_of_study, contributions, avatar, discordid) VALUES ($1,$2,$3,$4, $5, $6) RETURNING uid";
+    const values = [
+        userData.username,
+        userData.token,
+        userData.fieldOfStudy,
+        userData.contributions,
+        userData.avatarid,
+        userData.discordid
+    ];
+
+    const dbResponse = await db.query<User>(query, values);
+
+    const userId = dbResponse.rows[0].uid;
+
+    if(userId) return  userId;
+
+    throw new Error("User service, db exception");
+
+    return userId;
+}
