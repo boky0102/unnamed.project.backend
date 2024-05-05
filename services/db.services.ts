@@ -1,5 +1,8 @@
+import {User} from "../Types/userType";
+
 require('dotenv').config();
 import { Pool, Client } from 'pg';
+import fs from "fs";
 
 // single pool instance that will be shared across all services
 export const pool = new Pool({
@@ -32,29 +35,47 @@ export const initializeDB = async () => {
 
         // drops all databases that exist !!!For development only, in production this will be turned off
         // enables easy reconfiguration of database schema while developing
-        await database.query("DROP TABLE IF EXISTS exam_question");
-        await database.query("DROP TABLE IF EXISTS exam");
-        await database.query("DROP TABLE IF EXISTS questions");
-        await database.query("DROP TABLE IF EXISTS open_question");
-        await database.query("DROP TABLE IF EXISTS choice_question");
-        await database.query("DROP TABLE IF EXISTS subject");
-        await database.query("DROP TABLE IF EXISTS users");
+        if(process.env.DROP_DB_ON_RESTART === "on"){
+            await database.query("DROP TABLE IF EXISTS exam_question");
+            await database.query("DROP TABLE IF EXISTS exam");
+            await database.query("DROP TABLE IF EXISTS questions");
+            await database.query("DROP TABLE IF EXISTS open_question");
+            await database.query("DROP TABLE IF EXISTS choice_question");
+            await database.query("DROP TABLE IF EXISTS subject");
+            await database.query("DROP TABLE IF EXISTS users");
+            console.log("OLD DB dropped");
+        }
+
 
         // creates user table in the database
-        await database.query(`
-            CREATE TABLE users(
+        if(process.env.AUTOGENERATE_USER_ID === "on"){
+            await database.query(`
+            CREATE TABLE IF NOT EXISTS users(
                 uid uuid PRIMARY KEY DEFAULT gen_random_uuid(),
                 username TEXT NOT NULL,
                 auth_token TEXT,
                 field_of_study TEXT,
                 contributions INT,
-                avatarid TEXT,
+                avatar TEXT,
                 discordid TEXT
             );`);
+        } else {
+            await database.query(`
+            CREATE TABLE IF NOT EXISTS users(
+                uid uuid PRIMARY KEY,
+                username TEXT NOT NULL,
+                auth_token TEXT,
+                field_of_study TEXT,
+                contributions INT,
+                avatar TEXT,
+                discordid TEXT
+            );`);
+        }
+
 
         // creates subject table in database
         await database.query(`
-            CREATE TABLE subject(
+            CREATE TABLE IF NOT EXISTS subject(
                             sid SERIAL PRIMARY KEY,
                             name VARCHAR(100)
             );
@@ -62,7 +83,7 @@ export const initializeDB = async () => {
 
         // creates choice_question table in database
         await database.query(`
-            CREATE TABLE choice_question(
+            CREATE TABLE IF NOT EXISTS choice_question(
             cqid SERIAL PRIMARY KEY,
             question TEXT NOT NULL,
             answer1 TEXT NOT NULL,
@@ -77,7 +98,7 @@ export const initializeDB = async () => {
 
         //creates open_question table in database
         await database.query(`
-            CREATE TABLE open_question(
+            CREATE TABLE IF NOT EXISTS open_question(
             oqid SERIAL PRIMARY KEY,
             question TEXT NOT NULL,
             rating INT,
@@ -87,12 +108,12 @@ export const initializeDB = async () => {
 
         //creates questions table in database
         await database.query(`
-            CREATE TABLE questions(
+            CREATE TABLE IF NOT EXISTS questions(
             qid SERIAL PRIMARY KEY ,
             uid uuid NOT NULL,
             sid SERIAL NOT NULL,
-            oqid SERIAL,
-            cqid SERIAL,
+            oqid INTEGER,
+            cqid INTEGER,
             CONSTRAINT fk_open
                 FOREIGN KEY (oqid)
                     REFERENCES open_question(oqid),
@@ -114,7 +135,7 @@ export const initializeDB = async () => {
 
         // creates exam table in database
         await database.query(`
-            CREATE TABLE exam(
+            CREATE TABLE IF NOT EXISTS exam(
             eid SERIAL PRIMARY KEY,
             uid uuid,
             score INT,
@@ -129,9 +150,10 @@ export const initializeDB = async () => {
 
         // creates exam_question table in database
         await database.query(`
-            CREATE TABLE exam_question(
+            CREATE TABLE IF NOT EXISTS exam_question(
             eid SERIAL NOT NULL,
             qid SERIAL NOT NULL,
+            answer TEXT,
             PRIMARY KEY (eid, qid),
             CONSTRAINT fk_exam
                 FOREIGN KEY (eid)
@@ -142,11 +164,25 @@ export const initializeDB = async () => {
             );
         `);
 
+        console.log("DB initialized successfully");
+
+        const getUsers = await database.query("SELECT * FROM users");
+        const userNumber = getUsers.rows.length;
+
+        if(!userNumber){
+            const sqlScript = fs.readFileSync("./populate.sql", "utf-8");
+
+            await database.query(sqlScript);
+
+            console.log("DB populated with popualte.sql script");
+        }else{
+            console.log("DB is populated, populate.sql didn't run");
+        }
+
+
         //closes database
         await database.end();
 
-
-        console.log("DB initialized successfully");
 
     }catch(error){
         console.log("Failed to create db, please check that you have .env file in project and that you have local postgres db running");

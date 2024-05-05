@@ -7,7 +7,7 @@ CREATE TABLE Users(
                       field_of_study TEXT,
                       contributions INT,
                       discordID TEXT,
-                      avatarID TEXT
+                      avatar TEXT
 );
 
 DROP TABLE IF EXISTS subject;
@@ -82,6 +82,7 @@ DROP TABLE IF EXISTS exam_question;
 CREATE TABLE exam_question(
     eid SERIAL NOT NULL,
     qid SERIAL NOT NULL,
+    answer TEXT,
     PRIMARY KEY (eid, qid),
     CONSTRAINT fk_exam
         FOREIGN KEY (eid)
