@@ -4,14 +4,29 @@ require('dotenv').config();
 import { Pool, Client } from 'pg';
 import fs from "fs";
 
+export let pool: Pool;
+
 // single pool instance that will be shared across all services
-export const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: Number(process.env.DB_PORT)
-});
+if(process.env.DB_LOCATION === "local"){
+    pool = new Pool({
+        user: process.env.DB_USER,
+        host: process.env.DB_HOST,
+        database: process.env.DB_NAME,
+        password: process.env.DB_PASSWORD,
+        port: Number(process.env.DB_PORT)
+    });
+    
+} else if (process.env.DB_LOCATION === "remote"){
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false
+        }
+    });
+}
+
+
+
 
 /*
     This is a function for initializing database. It will
@@ -36,14 +51,19 @@ export const initializeDB = async () => {
         // drops all databases that exist !!!For development only, in production this will be turned off
         // enables easy reconfiguration of database schema while developing
         if(process.env.DROP_DB_ON_RESTART === "on"){
-            await database.query("DROP TABLE IF EXISTS exam_question");
-            await database.query("DROP TABLE IF EXISTS exam");
-            await database.query("DROP TABLE IF EXISTS questions");
-            await database.query("DROP TABLE IF EXISTS open_question");
-            await database.query("DROP TABLE IF EXISTS choice_question");
-            await database.query("DROP TABLE IF EXISTS subject");
-            await database.query("DROP TABLE IF EXISTS users");
+            if(process.env.DB_LOCATION === "remote"){
+                console.log("DB dropping needs to be tuned off while working with remote database");
+            } else {
+                await database.query("DROP TABLE IF EXISTS exam_question");
+                await database.query("DROP TABLE IF EXISTS exam");
+                await database.query("DROP TABLE IF EXISTS questions");
+                await database.query("DROP TABLE IF EXISTS open_question");
+                await database.query("DROP TABLE IF EXISTS choice_question");
+                await database.query("DROP TABLE IF EXISTS subject");
+                await database.query("DROP TABLE IF EXISTS users");
             console.log("OLD DB dropped");
+            }
+            
         }
 
 
