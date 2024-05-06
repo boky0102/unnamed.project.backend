@@ -11,7 +11,7 @@ import app from './app';
 initializeDB()
 
     .then(() => {    
-        app.listen(3000, () => {
+        app.listen(process.env.PORT || 80, () => {
             console.log("server is running on 3000");
         })
     })
