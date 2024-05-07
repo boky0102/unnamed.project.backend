@@ -18,12 +18,20 @@ export const getDataFromDiscord = async (code: string): Promise<UserAuthData> =>
     // checking if .env files contain variables
     if(process.env.DISCORD_OAUTH_ID && process.env.DISCORD_SECRET){
 
+        let redirectURI;
+        if(process.env.APP_MODE === "prod"){
+            redirectURI = "https://unnamedapp-cf0ce93cede1.herokuapp.com/auth"
+        } else{
+            redirectURI = "https://localhost:3000/auth"
+        }
+        
+
         const body = new URLSearchParams({
             client_id: process.env.DISCORD_OAUTH_ID,
             client_secret: process.env.DISCORD_SECRET,
             code: code,
             grant_type: 'authorization_code',
-            redirect_uri: 'http://localhost:3000/auth'
+            redirect_uri: redirectURI
         }).toString();
 
 
