@@ -129,3 +129,6 @@ dist
 
 # idea editor
 .idea
+
+
+tailwind.config

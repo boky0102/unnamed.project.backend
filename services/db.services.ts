@@ -3,6 +3,7 @@ import {User} from "../Types/userType";
 require('dotenv').config();
 import { Pool, Client } from 'pg';
 import fs from "fs";
+import { DbTableInfo } from "../Types/db.types";
 
 export let pool: Pool;
 
@@ -57,7 +58,9 @@ export const initializeDB = async () => {
                 }
             })
         }
+
         
+
 
         await database.connect();
 
@@ -214,6 +217,7 @@ export const initializeDB = async () => {
         }
 
 
+
         //closes database
         await database.end();
 
@@ -224,6 +228,8 @@ export const initializeDB = async () => {
         process.exit(1);  //terminates node process (shuts down server if db is not created successfully)
     }
 }
+
+
 
 
 
