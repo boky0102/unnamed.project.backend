@@ -1,0 +1,13 @@
+<%- include ('./partials/head') -%>
+
+<body class="light-bg flex justify-center items-center font-sans h-screen">
+    <form method="post" action="dev/auth" class="flex flex-col">
+        <label for="text" class="txt-dark">Username</label>
+        <input class="outline-none h-8 px-2 txt-dark" type="text" name="username"/>
+        <label for="password" class="mt-3 txt-dark">Password</label>
+        <input class="outline-none h-8 px-2" type="password" name="password"/>
+        <button type="submit" class="dark-bg txt-light w-1/2 mt-3 p-2 rounded" >Log in</button>
+    </form>
+</body>
+
+<%- include('./partials/end') %>

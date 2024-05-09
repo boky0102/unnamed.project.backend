@@ -1,0 +1,35 @@
+<%- include ('./partials/head') %>
+
+<body class="grid grid-cols-7">
+    <%- include ('./partials/sidebar') %>
+    <div class="col-span-6 h-screen light-bg">
+        <div class="flex flex-col w-11/12 row-sec mx-auto my-7">
+            <div class=" column-container border-b-2 md:text-sm sm:text-xs border-b-slate-900 w-full main-bg grid grid-cols-<%= (data.columnNames.length) %>">
+                <% for(var g = 0; g < data.columnNames.length; g++) { %>
+
+                        <div class="col-span-1 leading-8 ml-3"> <%= data.columnNames[g] %> </div>
+                    
+                <% } %>
+            </div>
+            
+                <% for(question of data.questionData) { %>
+                    <div class="row row-container text-xs w-full grid grid-cols-<%= data.columnNames.length %>">
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.cqid %> </div>
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.question %> </div>
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.answer1 %> </div>
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.answer2 %> </div>
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.answer3 %> </div>
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.answer4 %> </div>
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.solution %> </div>
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.rating %> </div>
+                        <div class="col-span-1 leading-6 ml-3"> <%= question.sid %> </div>
+                    </div>
+                <% } %>
+
+            
+            
+        </div>
+    </div>
+</body>
+
+<%- include ('./partials/end') %>

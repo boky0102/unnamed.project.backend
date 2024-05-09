@@ -26,6 +26,12 @@ declare module "jsonwebtoken" {
     }
 }
 
+declare module "express-session" {
+    interface SessionData {
+        loggedIn: boolean
+    }
+}
+
 
 declare global {
     namespace Express {

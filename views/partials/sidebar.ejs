@@ -1,0 +1,8 @@
+<nav class="col-span-1 h-screen dark-bg felx flex-col flex-wrap">
+    <h1 class="m-7 font-bold txt-light text-lg">TABLES</h1>
+    <div class="flex flex-col">
+    <% for(var i = 0; i < data.tableNames.length; i++) { %>
+        <a class="my-4 mx-auto light-bg w-10/12 text-center rounded-sm p-2" href=<%= `/dev/${data.tableNames[i]}` %>><%= data.tableNames[i] %></a>
+    <% } %>
+    </div>
+</nav>

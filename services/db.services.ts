@@ -1,4 +1,3 @@
-import {User} from "../Types/userType";
 
 require('dotenv').config();
 import { Pool, Client } from 'pg';
@@ -57,7 +56,9 @@ export const initializeDB = async () => {
                 }
             })
         }
+
         
+
 
         await database.connect();
 
@@ -214,6 +215,7 @@ export const initializeDB = async () => {
         }
 
 
+
         //closes database
         await database.end();
 
@@ -224,6 +226,8 @@ export const initializeDB = async () => {
         process.exit(1);  //terminates node process (shuts down server if db is not created successfully)
     }
 }
+
+
 
 
 
