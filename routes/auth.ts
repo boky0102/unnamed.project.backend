@@ -20,7 +20,7 @@ authRouter.get("/protected", [authenticate] , async (req: Request, res: Response
     try{
 
         const userId = req.userID;
-        console.log(userId);
+
         res.status(200).send({
             id: userId
         });

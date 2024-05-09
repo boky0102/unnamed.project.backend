@@ -43,6 +43,16 @@
         .row-container div:not(:last-child){
             border-right: 1px solid gray;
         }
+
+        .long-text{
+            white-space: nowrap;
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+
+        .long-text::-webkit-scrollbar {
+            display: none;
+        }
         
         
     </style>
