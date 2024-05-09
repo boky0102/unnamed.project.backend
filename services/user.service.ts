@@ -1,6 +1,6 @@
 import { pool } from "./db.services"
 import { User } from "../Types/userType";
-import {DiscordUserData, UserAuthData} from "../Types/authType";
+import { UserAuthData} from "../Types/authType";
 import {HttpException} from "../Types/error";
 
 // service for getting data for user from db

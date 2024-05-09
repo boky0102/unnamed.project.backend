@@ -1,8 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import {HttpException} from "../Types/error";
-import jsonwebtoken, { JsonWebTokenError, JwtPayload, TokenExpiredError, VerifyErrors } from "jsonwebtoken";
+import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 import { parseCookie } from "../utility/cookies.utility";
-import { Token } from "typescript";
 
 type customJwtPayload = {
      id: string

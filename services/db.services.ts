@@ -1,9 +1,7 @@
-import {User} from "../Types/userType";
 
 require('dotenv').config();
 import { Pool, Client } from 'pg';
 import fs from "fs";
-import { DbTableInfo } from "../Types/db.types";
 
 export let pool: Pool;
 

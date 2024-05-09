@@ -1,7 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { parseCookie } from "../utility/cookies.utility";
-import bcrypt from "bcrypt";
-import { setEmitFlags } from "typescript";
 
 export const authenticateDev = async (req: Request, res: Response, next: NextFunction) => {
 
