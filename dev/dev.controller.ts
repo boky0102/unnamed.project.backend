@@ -19,7 +19,6 @@ export const devController = async (req: Request, res: Response, next: NextFunct
 export const devLoginController = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const {username, password} = req.body;
-        console.log(req.body);
 
         if(password === process.env.DEV_PAGE_PASSWORD && username === process.env.DEV_PAGE_USERNAME){
 
@@ -46,7 +45,6 @@ export const devMainController = async (req: Request, res: Response, next: NextF
             tableNames: tables
         }
 
-        console.log(data);
 
         res.render("main.ejs", {
             data: data
@@ -66,7 +64,6 @@ export const devUserController = async (req: Request, res: Response, next: NextF
         const users = dbres.rows;
         db.release();
 
-        console.log(users);
         const tableNames = await getTableNames();
         
         const columnNames = await getObjectKeys(users[0]);

@@ -2,7 +2,9 @@
 INSERT INTO users (uid ,username, auth_token, field_of_study, contributions, discordID, avatar)
 VALUES
     ('c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0' ,'user1', 'auth_token1', 'Computer Science', 10, 'discord123', 'avatar123'),
-    ('e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8','user2', 'auth_token2', 'Physics', 5, 'discord456', 'avatar456');
+    ('e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8','user2', 'auth_token2', 'Physics', 5, 'discord456', 'avatar456'),
+    ('8ffa8839-a6ce-4eb2-8484-5341645f1a36', 'borna_ivankovic', 'WDsF9Ryw5fsdfsdfsdfdsemSSG1gRzeNbJM', null, null, '4324329042390','https://cdn.discordapp.com/avatars/398501114095337472/12eebc5c0a8e0ecbfc48ead85d2e50bd.png
+398501114095337472');
 
 -- Subject
 INSERT INTO subject (name)

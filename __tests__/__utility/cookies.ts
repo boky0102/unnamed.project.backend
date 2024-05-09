@@ -13,8 +13,6 @@ describe("Testing cookie parser", () => {
 
         expect(parsedCookie).toHaveProperty("value3");
 
-        console.log(parsedCookie);
-
         expect(parsedCookie.value1).toBe("dasdas");
 
         expect(parsedCookie.value2).toBe("2222");

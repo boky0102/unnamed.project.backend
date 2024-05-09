@@ -15,7 +15,7 @@ export const authenticateDev = async (req: Request, res: Response, next: NextFun
                     const valid = req.session.loggedIn;
             
                     if(!valid){
-                        console.log("Invalid cookie token");
+
                         res.status(401).redirect("/dev");
     
                     }else{

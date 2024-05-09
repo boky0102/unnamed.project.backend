@@ -18,13 +18,13 @@
             </div>
             
                 <% for(user of data.userData) { %>
-                    <div class="row row-container text-xs w-full grid grid-cols-<%= data.columnNames.length + 1 %>">
+                    <div class="row row-container text-xs w-full grid grid-cols-<%= data.columnNames.length + 1 %> ">
                         <div class="col-span-2 leading-6 ml-3"> <%= user.uid %> </div>
                         <div class="col-span-1 leading-6 ml-3"> <%= user.username %> </div>
-                        <div class="col-span-1 leading-6 ml-3"> <%= user.auth_token %> </div>
+                        <div class="col-span-1 leading-6 ml-3 long-text"> <%= user.auth_token %> </div>
                         <div class="col-span-1 leading-6 ml-3"> <%= user.field_of_study %> </div>
                         <div class="col-span-1 leading-6 ml-3"> <%= user.contributions %> </div>
-                        <div class="col-span-1 leading-6 ml-3"> <%= user.avatar %> </div>
+                        <div class="col-span-1 leading-6 ml-3 long-text"> <%= user.avatar %> </div>
                         <div class="col-span-1 leading-6 ml-3"> <%= user.discordid %> </div>
                     </div>
                 <% } %>
