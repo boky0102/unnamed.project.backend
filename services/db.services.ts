@@ -2,6 +2,7 @@
 require('dotenv').config();
 import { Pool, Client } from 'pg';
 import fs from "fs";
+import { log } from '../utility/logger.utility';
 
 export let pool: Pool;
 
@@ -67,7 +68,7 @@ export const initializeDB = async () => {
         // enables easy reconfiguration of database schema while developing
         if(process.env.DROP_DB_ON_RESTART === "on"){
             if(process.env.DB_LOCATION === "remote"){
-                console.log("DB dropping needs to be tuned off while working with remote database");
+                log.error("DB dropping needs to be tuned off while working with remote database");
             } else {
                 await database.query("DROP TABLE IF EXISTS exam_question");
                 await database.query("DROP TABLE IF EXISTS exam");
@@ -76,7 +77,7 @@ export const initializeDB = async () => {
                 await database.query("DROP TABLE IF EXISTS choice_question");
                 await database.query("DROP TABLE IF EXISTS subject");
                 await database.query("DROP TABLE IF EXISTS users");
-            console.log("OLD DB dropped");
+            log.info("OLD DB dropped");
             }
             
         }
@@ -199,7 +200,7 @@ export const initializeDB = async () => {
             );
         `);
 
-        console.log("DB initialized successfully");
+        log.info("DB initialized successfully");
 
         const getUsers = await database.query("SELECT * FROM users");
         const userNumber = getUsers.rows.length;
@@ -209,9 +210,9 @@ export const initializeDB = async () => {
 
             await database.query(sqlScript);
 
-            console.log("DB populated with popualte.sql script");
+            log.info("DB populated with popualte.sql script");
         }else{
-            console.log("DB is populated, populate.sql didn't run");
+            log.info("DB is populated, populate.sql didn't run");
         }
 
 

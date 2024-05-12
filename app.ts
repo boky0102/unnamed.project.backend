@@ -19,7 +19,7 @@ require('dotenv').config();
 
 const app = express();
 
-/* app.use(express.json()); */ // Parse incoming requests data
+app.use(express.json()); // Parse incoming requests data
 
 app.use(cors<Request>({
     origin: process.env.FRONTEND_URL,

@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import { HttpException } from "../Types/error";
+import { log } from "../utility/logger.utility";
 
 /*  this error handling middleware will be called first
     when function next(err) is called from controller.
@@ -7,8 +8,8 @@ import { HttpException } from "../Types/error";
     error handling middleware
 */
 export const logErrors = (err: any, req: Request, res: Response, next: NextFunction) => {
-    console.log(err);
-    console.error(err.stack);
+    log.error(err);
+    log.error(err.stack);
     next(err);
 }
 
