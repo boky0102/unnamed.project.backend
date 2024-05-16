@@ -58,56 +58,58 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
           }catch(error){
                next(error);
           }
-     }
-
-
-     try{
-          if(process.env.JWT_SECRET && process.env.SECURITY_OAUTH === "on"){
-
-
-               const cookiesString = req.headers.cookie;
-
-               if(!cookiesString){
-                    throw new HttpException(401, "Cookie is not present");
-               }
-
-               const cookieObj = await parseCookie(cookiesString) as TokenCookie;
-
-               
+     } else {
+          try{
+               if(process.env.JWT_SECRET && process.env.SECURITY_OAUTH === "on"){
+     
+     
+                    const cookiesString = req.headers.cookie;
+     
+                    if(!cookiesString){
+                         throw new HttpException(401, "Cookie is not present");
+                    }
+     
+                    const cookieObj = await parseCookie(cookiesString) as TokenCookie;
+     
                     
-               jsonwebtoken.verify(cookieObj.token, process.env.JWT_SECRET,  (err, decoded) => {
-                    
-                    if(err){
                          
-                         if(err instanceof TokenExpiredError){
-                              res.status(401).send("Cookie not good anymore");
-                         } else{
-                              res.clearCookie("token");
-                              res.status(401).send("Unauthorized");
+                    jsonwebtoken.verify(cookieObj.token, process.env.JWT_SECRET,  (err, decoded) => {
+                         
+                         if(err){
+                              
+                              if(err instanceof TokenExpiredError){
+                                   res.status(401).send("Cookie not good anymore");
+                              } else{
+                                   res.clearCookie("token");
+                                   res.status(401).send("Unauthorized");
+                              }
+     
                          }
-
-                    }
-
-                    if(typeof decoded !== "string" && decoded){
-                         req.userID = decoded.id;
-                    } else {
-                         throw new HttpException(500, "Jwt payload missing or not valid");
-                    }
-
-
-                    next();
-               });
-
+     
+                         if(typeof decoded !== "string" && decoded){
+                              req.userID = decoded.id;
+                         } else {
+                              throw new HttpException(500, "Jwt payload missing or not valid");
+                         }
+     
+     
+                         next();
+                    });
+     
+                    
+     
+     
+               } else{
+                    throw new HttpException(500, "Env file isn't set up properly");
+               }
                
-
-
-          } else{
-               throw new HttpException(500, "Env file isn't set up properly");
+     
+          } catch(error){
+               next(error);
           }
-          
-
-     } catch(error){
-          next(error);
      }
+
+
+     
 
 }

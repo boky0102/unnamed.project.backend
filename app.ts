@@ -5,6 +5,7 @@ import { defaultErrorHandler, httpExceptionHandler, logErrors } from './middlewa
 import { authRouter } from './routes/auth';
 import cors from 'cors';
 import { devRouter } from './dev/dev.routes';
+import { subjectRouter } from './routes/subject';
 require('dotenv').config();
 
 
@@ -44,6 +45,7 @@ app.use(defaultErrorHandler); // middleware for catching all other errors
 app.use("/users", userRouter); //endpoint specified
 app.use("/auth", authRouter);
 app.use("/dev", devRouter);
+app.use("/subject", subjectRouter);
 
 app.get("/", (req: Request, res: Response) => {
     res.status(200).send("Route good");
