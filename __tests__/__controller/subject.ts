@@ -17,10 +17,21 @@ describe("Subject routes should behave properly and respond with correct http co
 
         expect(response.status).toBe(200);
         
+        expect(response.body.length > 0).toBe(true);
         expect(response.body[0]).toHaveProperty("name");
         expect(response.body[0]).toHaveProperty("sid");
         
     })
 
+    test("It should respond with not found status code if there are no subjects starting with given query parameter", async() => {
+        const response = await agent
+            .get("/subject?query=dsafds")
+            .set("Cookie", [
+                'token=c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0'
+            ])
+            .send()
+
+            expect(response.status).toBe(404);
+    })
 
 })

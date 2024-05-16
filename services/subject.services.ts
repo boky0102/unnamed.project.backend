@@ -43,9 +43,21 @@ export const getSubjectsStartingWith = async (matcher: string) : Promise<Subject
     const dbResponse = await db.query<Subject>(query, values);
     db.release();
 
-    if(!dbResponse.rows){
+    if(!dbResponse.rows || dbResponse.rowCount === 0){
         throw new HttpException(404, "No subjects start with given string");
     }
 
     return dbResponse.rows;
+}
+
+export const deleteSubject = async (name: string) : Promise<void> => {
+    const db = await pool.connect();
+
+
+    const query = "DELETE FROM subject WHERE LOWER(name) = LOWER($1)";
+    const values = [name];
+
+    db.query(query, values);
+
+    db.release();
 }

@@ -1,7 +1,11 @@
 import { HttpException } from "../../Types/error";
 import { Subject } from "../../Types/subject.types";
-import { pool } from "../../services/db.services";
-import { getSubjectsStartingWith, saveSubject } from "../../services/subject.services"
+import { initializeDB, pool } from "../../services/db.services";
+import { deleteSubject, getSubjectsStartingWith, saveSubject } from "../../services/subject.services"
+
+beforeAll(async () => {
+    await initializeDB();
+})
 
 describe("Subject service should handle saving subjects properly", () => {
     test("It should save new subject to the database", async() => {
