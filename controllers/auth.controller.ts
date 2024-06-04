@@ -84,17 +84,20 @@ export const authController = async (req: Request, res: Response, next: NextFunc
             res.redirect(process.env.FRONTEND_URL);
         }
 
+
+
+        
         
     }catch(error){
         next(error);
     }
 }
 
-/*
-    Controller for login route, it redirect user to discord's oauth authorization page
-    It requires valid discord url to be present in .env file
-*/
+/*  login route for frontend, this route will be called by
+    sign in / sign up button on frontend, it gets discrod oauth link
+    from .env file and redirects user who made request to that link.
 
+*/
 export const loginController = (req: Request, res: Response, next: NextFunction) => {
 
     try{
@@ -108,7 +111,6 @@ export const loginController = (req: Request, res: Response, next: NextFunction)
             throw new HttpException(500, "Discord redirect url not set up in .env");
 
         }
-
 
     }catch(error){
         next(error);
