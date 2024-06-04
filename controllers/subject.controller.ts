@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { Subject } from "../Types/subject.types"
-import { getSubjectsStartingWith } from "../services/subject.services"
+import { getSubjectsStartingWith, saveSubject } from "../services/subject.services"
 import { HttpException } from "../Types/error"
 
 export const searchSubjectsController = async (req: Request, res: Response, next: NextFunction) => {
@@ -19,4 +19,16 @@ export const searchSubjectsController = async (req: Request, res: Response, next
         next(error);
     }
     
+}
+
+export const postSubjectController = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+
+        const subject = req.body.subject;
+        await saveSubject(subject);
+        res.status(201).send();
+
+    }catch(error){
+        next(error);
+    }
 }

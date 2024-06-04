@@ -5,7 +5,7 @@ import { pool } from "./db.services"
 export const saveSubject = async (subject: string) => {
 
     if(await subjectExists(subject)){
-        throw new HttpException(404, "Subject already exists in database");
+        throw new HttpException(400, "Subject already exists in database");
     }
 
     if(subject.length < 4){
