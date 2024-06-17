@@ -1,4 +1,5 @@
 import { HttpException } from "../Types/error";
+import { log } from "../utility/logger.utility";
 import { pool } from "./db.services";
 
 export const validateOpenQuestionRequestData = async (questionData: Object) => {
@@ -10,22 +11,43 @@ export const validateOpenQuestionRequestData = async (questionData: Object) => {
 }
 
 export const validateOpenQuestionData = async (questionData: OpenQuestionData) => {
-    if(questionData.question.length < 10) return false;
+    if(questionData.question.length < 10 && questionData.sid) return false;
     return true;
 }
 
-export const saveOpenQuestion = async (questionData: OpenQuestionData) => {
+export const saveOpenQuestion = async (questionData: OpenQuestionData, userId: string) => {
 
     if(await validateOpenQuestionRequestData(questionData) && await validateOpenQuestionData(questionData)){
         const conn = await pool.connect();
 
-        const query = "INSERT INTO open_question (question, sid) VALUES ($1, $2) RETURNING oqid";
+        try{
+            
+            await conn.query("BEGIN");
 
-        const values = [questionData.question, questionData.sid];
+            const queryText = "INSERT INTO open_question (question, sid) VALUES ($1, $2) RETURNING oqid";
+            const queryValues = [questionData.question, questionData.sid];
 
-        const oqid = await conn.query<OpenQuestion>(query, values);
+            const dbResponse = await conn.query<OpenQuestion>(queryText, queryValues);
 
-        return oqid.rows[0].oqid;
+            const questionQuery = "INSERT INTO questions (uid, sid, oqid) VALUES ($1, $2, $3) RETURNING qid";
+            const questionValues = [userId, questionData.sid, dbResponse.rows[0].oqid];
+
+            const dbRes = await conn.query<Question>(questionQuery, questionValues);
+
+            await conn.query("COMMIT");
+
+            console.log(`question = ${questionData.question}, sid = ${questionData.sid}, uid = ${userId}, opqid = ${dbResponse.rows[0].oqid}`)
+
+            return dbRes.rows[0].qid;
+
+
+        }catch(error){
+            await conn.query("ROLLBACK");
+            throw error;
+        } finally{
+            conn.release();
+        }
+
     } else {
         throw new HttpException(400, "Bad request");
     }

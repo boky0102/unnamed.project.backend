@@ -22,7 +22,7 @@ describe("Open question service should work properly", () => {
 
         expect(valid).toBe(true);
         expect(valid2).toBe(false);
-    })
+    });
 
     it("Should save new open question data given proper data", async() => {
 
@@ -31,7 +31,7 @@ describe("Open question service should work properly", () => {
             sid: 1
         };
 
-        const result = await saveOpenQuestion(mockOpenQuestion);
+        const result = await saveOpenQuestion(mockOpenQuestion, "e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8");
 
         expect(result !== null).toBe(true);
 
@@ -47,11 +47,11 @@ describe("Open question service should work properly", () => {
 
         try{
 
-            await saveOpenQuestion(mockOpenQuestion);
+            await saveOpenQuestion(mockOpenQuestion, "e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8");
 
         }catch(error){
             expect(error).toEqual(new HttpException(400, "Bad request"));
         }
 
-    })
+    });
 })

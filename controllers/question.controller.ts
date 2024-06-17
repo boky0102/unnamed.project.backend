@@ -10,7 +10,7 @@ export const postOpenQuestionController = async (req: Request, res: Response, ne
 
         const questionData = req.body as OpenQuestionData;
 
-        await saveOpenQuestion(questionData);
+        await saveOpenQuestion(questionData, req.userID!);
         
 
     }catch(error){
