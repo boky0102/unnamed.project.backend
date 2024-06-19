@@ -24,8 +24,8 @@ export const saveOpenQuestion = async (questionData: OpenQuestionData, userId: s
             
             await conn.query("BEGIN");
 
-            const queryText = "INSERT INTO open_question (question, sid) VALUES ($1, $2) RETURNING oqid";
-            const queryValues = [questionData.question, questionData.sid];
+            const queryText = "INSERT INTO open_question (question) VALUES ($1) RETURNING oqid";
+            const queryValues = [questionData.question];
             const dbResponse = await conn.query<OpenQuestion>(queryText, queryValues);
 
             const questionQuery = "INSERT INTO questions (uid, sid, oqid) VALUES ($1, $2, $3) RETURNING qid";
@@ -69,8 +69,8 @@ export const saveChoiceQuestion = async (questionData: ChoiceQuestionData, userI
 
             await conn.query("BEGIN");
 
-            const choiceQuestionQuery = "INSERT INTO choice_question (question, answer1, answer2, answer3, answer4, solution, sid) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING cqid";
-            const choiceQuestionValues = [questionData.question, questionData.answer1, questionData.answer2, questionData.answer3, questionData.answer4, questionData.solution, questionData.sid];
+            const choiceQuestionQuery = "INSERT INTO choice_question (question, answer1, answer2, answer3, answer4, solution) VALUES ($1, $2, $3, $4, $5, $6) RETURNING cqid";
+            const choiceQuestionValues = [questionData.question, questionData.answer1, questionData.answer2, questionData.answer3, questionData.answer4, questionData.solution];
             const dbRes1 = await conn.query<ChoiceQuestion>(choiceQuestionQuery, choiceQuestionValues);
 
             const questionQuery = "INSERT INTO questions (uid, sid, cqid) VALUES ($1, $2, $3) RETURNING qid"
@@ -93,4 +93,32 @@ export const saveChoiceQuestion = async (questionData: ChoiceQuestionData, userI
 
     
 
+}
+
+export const getOpenQuestion = async (questionId: number) => {
+    const conn = await pool.connect();
+
+    const query =`SELECT qid, uid, sid, question,  FROM questions 
+                    INNER JOIN open_question ON questions.oqid = open_question.oqid 
+                    WHERE qid = ($1)`
+    const values = [questionId];
+
+    const { rows } = await conn.query<OpenQuestionExtended>(query, values);
+    conn.release(); 
+
+    return rows[0];
+}
+
+export const getChoiceQuestion = async (questionId: number) => {
+    const conn = await pool.connect();
+
+    const query =`SELECT qid, uid, sid, question, answer1, answer2, answer3, answer4, solution  FROM questions 
+                    INNER JOIN choice_question ON questions.oqid = open_question.oqid 
+                    WHERE qid = ($1)`
+    const values = [questionId];
+
+    const { rows } = await conn.query<ChoiceQuestionExtended>(query, values);
+    conn.release(); 
+
+    return rows[0];
 }

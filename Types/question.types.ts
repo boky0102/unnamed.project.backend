@@ -22,6 +22,24 @@ type Question = {
     cqid?: number
 }
 
+type OpenQuestionExtended = {
+    qid: number,
+    uid: string,
+    sid: number,
+    question: string
+}
+
+type ChoiceQuestionExtended = {
+    qid: number,
+    uid: string,
+    sid: number,
+    question: string,
+    answer1: string,
+    answer2: string,
+    answer3: string,
+    answer4: string,
+    solution: number
+}
 
 //DATABASE DATA
 type ChoiceQuestion = {
@@ -46,3 +64,4 @@ type ChoiceQuestionData = {
     solution: number,
     sid: number
 };
+
