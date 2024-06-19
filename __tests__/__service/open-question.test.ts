@@ -1,5 +1,14 @@
 import { HttpException } from "../../Types/error";
+import { initializeDB, pool } from "../../services/db.services";
 import { saveOpenQuestion, validateOpenQuestionRequestData } from "../../services/question.services";
+
+/* beforeAll(async () => {
+    await initializeDB();
+}) */
+
+afterAll(async () => {
+    await pool.end();
+})
 
 describe("Open question service should work properly", () => {
 

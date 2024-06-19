@@ -1,6 +1,10 @@
 import { pool } from "../../services/db.services";
 import { saveChoiceQuestion, validateChoiceQuestionPostData } from "../../services/question.services";
 
+afterAll(async () => {
+    await pool.end();
+})
+
 describe("Question service should properly save and validate choice questions", () => {
     it("Should invalidate bad choice question data", async () => {
         const invalidMockData: ChoiceQuestionData = {

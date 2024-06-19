@@ -7,6 +7,10 @@ beforeAll(async () => {
     await initializeDB();
 })
 
+afterAll(async () => {
+    await pool.end();
+})
+
 describe("Subject service should handle saving subjects properly", () => {
     test("It should save new subject to the database", async() => {
         await saveSubject("Mechanics");
