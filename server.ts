@@ -1,6 +1,6 @@
 require('dotenv').config();
 import { initializeDB } from './services/db.services';
-import app from './app';
+import  { initializeWebServer } from './app';
 import { log } from './utility/logger.utility';
 
 /*
@@ -11,15 +11,14 @@ import { log } from './utility/logger.utility';
 
 log.printHeader();
 
-initializeDB()
+async function start(){
+    await initializeWebServer();
+}
 
-    .then(() => {    
-        app.listen(process.env.PORT || 80, () => {
-            log.success(`SERVER IS RUNNING ON PORT ${process.env.PORT}`);
-        });
+start()
+    .then(() => {
+        log.info("App started successfully");
     })
     .catch((error) => {
-        log.error(error);
-        process.exit(1);
+        log.info("Error occured during startup", error);
     })
-

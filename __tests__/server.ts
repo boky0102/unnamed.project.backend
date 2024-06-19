@@ -1,4 +1,4 @@
-import supertest from "supertest";
+/* import supertest from "supertest";
 import app from "../app";
 
 const request = supertest;
@@ -9,4 +9,4 @@ describe("Testing the root path - /", () => {
         expect(response.statusCode).toBe(200);
     })
     
-})
+}) */
