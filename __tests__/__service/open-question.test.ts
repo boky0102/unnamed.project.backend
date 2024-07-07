@@ -1,10 +1,9 @@
 import { HttpException } from "../../Types/error";
 import { initializeDB, pool } from "../../services/db.services";
-import { saveOpenQuestion, validateOpenQuestionRequestData } from "../../services/question.services";
+import { OpenQuestionData } from "../../Types/question.types";
 
-/* beforeAll(async () => {
-    await initializeDB();
-}) */
+import { getOpenQuestion, saveOpenQuestion, validateOpenQuestionRequestData } from "../../services/question.services";
+
 
 afterAll(async () => {
     await pool.end();
@@ -12,7 +11,7 @@ afterAll(async () => {
 
 describe("Open question service should work properly", () => {
 
-    it("Should validate open question data properly", async() => {
+    test("Should validate open question data properly", async() => {
 
         const mockData1 = {
 
@@ -33,7 +32,7 @@ describe("Open question service should work properly", () => {
         expect(valid2).toBe(false);
     });
 
-    it("Should save new open question data given proper data", async() => {
+    test("Should save new open question data given proper data", async() => {
 
         const mockOpenQuestion: OpenQuestionData = {
             question: "What is the biggest question in this database ?",
@@ -46,7 +45,7 @@ describe("Open question service should work properly", () => {
 
     });
 
-    it("Should not save open question data with invalid data", async() => {
+    test("Should not save open question data with invalid data", async() => {
 
 
         const mockOpenQuestion: OpenQuestionData = {
@@ -59,8 +58,28 @@ describe("Open question service should work properly", () => {
             await saveOpenQuestion(mockOpenQuestion, "e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8");
 
         }catch(error){
-            expect(error).toEqual(new HttpException(400, "Bad request"));
+            expect(error).toEqual(new HttpException(400, "Bad open question data provided, missing fields or too short question"));
         }
 
     });
+
+    test("Should get open question from the db", async () => {
+        
+        const question = await getOpenQuestion(2);
+        expect(question).toMatchObject({
+            qid: 2,
+            uid: "e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8",
+            sid: 3,
+            question: "Discuss the causes of the American Civil War."
+        });
+    })
+
+    test("Should not get open question with wrong question id", async() => {
+        try{
+            const question = await getOpenQuestion(999);
+        } catch(error){
+            expect(error).toEqual(new HttpException(404, "Question with given id doesn't exist"));
+        }
+        
+    })
 })

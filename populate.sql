@@ -14,18 +14,18 @@ VALUES
     ('History');
 
 -- Choice Questions
-INSERT INTO choice_question (question, answer1, answer2, answer3, answer4, solution, rating, sid)
+INSERT INTO choice_question (question, answer1, answer2, answer3, answer4, solution, rating)
 VALUES
-    ('What is 2 + 2?', '3', '4', '5', '6', 2, 4, 1),
-    ('Who discovered penicillin?', 'Isaac Newton', 'Marie Curie', 'Alexander Fleming', 'Albert Einstein', 3, 5, 3),
-    ('What year did World War II end?', '1945', '1939', '1941', '1950', 1, 4, 3);
+    ('What is 2 + 2?', '3', '4', '5', '6', 2, 4),
+    ('Who discovered penicillin?', 'Isaac Newton', 'Marie Curie', 'Alexander Fleming', 'Albert Einstein', 3, 5),
+    ('What year did World War II end?', '1945', '1939', '1941', '1950', 1, 4);
 
 -- Open Questions
-INSERT INTO open_question (question, rating, sid)
+INSERT INTO open_question (question, rating)
 VALUES
-    ('What is the capital of France?', 3, 3),
-    ('Explain the concept of photosynthesis.', 5, 2),
-    ('Discuss the causes of the American Civil War.', 4, 3);
+    ('What is the capital of France?', 3),
+    ('Explain the concept of photosynthesis.', 5),
+    ('Discuss the causes of the American Civil War.', 4);
 
 -- Questions
 INSERT INTO questions (uid, sid, oqid, cqid)

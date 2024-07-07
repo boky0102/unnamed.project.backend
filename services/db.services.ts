@@ -127,8 +127,7 @@ export const initializeDB = async () => {
             answer3 TEXT NOT NULL,
             answer4 TEXT NOT NULL,
             solution INT NOT NULL,
-            rating INT,
-            sid SERIAL
+            rating INT
             );
         `);
 
@@ -137,8 +136,7 @@ export const initializeDB = async () => {
             CREATE TABLE IF NOT EXISTS open_question(
             oqid SERIAL PRIMARY KEY,
             question TEXT NOT NULL,
-            rating INT,
-            sid SERIAL
+            rating INT
             );
         `);
 

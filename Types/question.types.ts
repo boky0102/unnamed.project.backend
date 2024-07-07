@@ -1,4 +1,4 @@
-type OpenQuestion = {
+export type OpenQuestion = {
     oqid: number,
     question: string,
     sid: number,
@@ -7,14 +7,14 @@ type OpenQuestion = {
 
 
 //POST REQUEST DATA
-type OpenQuestionData = {
+export type OpenQuestionData = {
     question: string,
     rating?: number,
     sid: number
 }
 
 //DATABASE DATA
-type Question = {
+export type Question = {
     qid: number,
     uid: string,
     sid: number,
@@ -22,9 +22,27 @@ type Question = {
     cqid?: number
 }
 
+export type OpenQuestionExtended = {
+    qid: number,
+    uid: string,
+    sid: number,
+    question: string
+}
+
+export type ChoiceQuestionExtended = {
+    qid: number,
+    uid: string,
+    sid: number,
+    question: string,
+    answer1: string,
+    answer2: string,
+    answer3: string,
+    answer4: string,
+    solution: number
+}
 
 //DATABASE DATA
-type ChoiceQuestion = {
+export type ChoiceQuestion = {
     cqid: number,
     question: string,
     answer1: string,
@@ -37,7 +55,7 @@ type ChoiceQuestion = {
 }
 
 // POST REQUEST DATA
-type ChoiceQuestionData = {
+export type ChoiceQuestionData = {
     question: string,
     answer1: string,
     answer2: string,
@@ -46,3 +64,4 @@ type ChoiceQuestionData = {
     solution: number,
     sid: number
 };
+
