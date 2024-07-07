@@ -8,6 +8,7 @@ import { devRouter } from './dev/dev.routes';
 import { subjectRouter } from './routes/subject';
 import { initializeDB } from './services/db.services';
 import { log } from './utility/logger.utility';
+import { questionRouter } from './routes/question';
 require('dotenv').config();
 
 
@@ -31,7 +32,7 @@ export const initializeWebServer = () => {
                 app.use(express.json()); // Parse incoming requests data
 
                 app.use(cors<Request>({
-                    origin: process.env.FRONTEND_URL,
+                    origin:  process.env.FORNTEND_URL,
                     credentials: true
                 }))
 
@@ -54,6 +55,7 @@ export const initializeWebServer = () => {
                 app.use("/auth", authRouter);
                 app.use("/dev", devRouter);
                 app.use("/subject", subjectRouter);
+                app.use("/question", questionRouter);
 
                 app.get("/", (req: Request, res: Response) => {
                     res.status(200).send("Route good");

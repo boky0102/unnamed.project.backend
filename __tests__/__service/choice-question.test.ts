@@ -1,12 +1,14 @@
+import { HttpException } from "../../Types/error";
+import { ChoiceQuestionData, Question } from "../../Types/question.types";
 import { pool } from "../../services/db.services";
-import { saveChoiceQuestion, validateChoiceQuestionPostData } from "../../services/question.services";
+import { getChoiceQuestion, saveChoiceQuestion, validateChoiceQuestionPostData } from "../../services/question.services";
 
 afterAll(async () => {
     await pool.end();
 })
 
 describe("Question service should properly save and validate choice questions", () => {
-    it("Should invalidate bad choice question data", async () => {
+    test("Should invalidate bad choice question data", async () => {
         const invalidMockData: ChoiceQuestionData = {
             question: "short?",
             answer1: "yes",
@@ -36,7 +38,7 @@ describe("Question service should properly save and validate choice questions", 
 
     });
 
-    it("Should save choice question properly to the database", async () => {
+    test("Should save choice question properly to the database", async () => {
         const mockData: ChoiceQuestionData = {
             question: "What is the most renown computer science award?",
             answer1: "Turing",
@@ -60,6 +62,36 @@ describe("Question service should properly save and validate choice questions", 
 
         conn.release();
 
+
+    })
+
+    test("Should get choice question from the database", async () => {
+        const questionData = await getChoiceQuestion(1);
+
+        expect(questionData).toMatchObject({
+            qid: 1,
+            uid: "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0",
+            sid: 1,
+            question: "What is 2 + 2?",
+            answer1: "3",
+            answer2: "4",
+            answer3: "5",
+            answer4: "6",
+            solution: 2
+        })
+    })
+
+
+    test("Should not get choice question given bad question id", async () => {
+
+
+        try{
+
+            const questionData = await getChoiceQuestion(8888);
+
+        }catch(error){
+            expect(error).toEqual(new HttpException(404, "Question with given id doesn't exist"));
+        }
 
     })
 })

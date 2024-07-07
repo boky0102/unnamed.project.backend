@@ -1,4 +1,5 @@
 import { HttpException } from "../Types/error";
+import {ChoiceQuestion, ChoiceQuestionData, ChoiceQuestionExtended, OpenQuestion, OpenQuestionData, OpenQuestionExtended, Question} from "../Types/question.types";
 import { log } from "../utility/logger.utility";
 import { pool } from "./db.services";
 
@@ -98,27 +99,33 @@ export const saveChoiceQuestion = async (questionData: ChoiceQuestionData, userI
 export const getOpenQuestion = async (questionId: number) => {
     const conn = await pool.connect();
 
-    const query =`SELECT qid, uid, sid, question,  FROM questions 
+    const query =`SELECT qid, uid, sid, question FROM questions 
                     INNER JOIN open_question ON questions.oqid = open_question.oqid 
                     WHERE qid = ($1)`
     const values = [questionId];
 
     const { rows } = await conn.query<OpenQuestionExtended>(query, values);
-    conn.release(); 
+    conn.release();
 
-    return rows[0];
+    if(rows.length === 0) throw new HttpException(404, "Question with given id doesn't exist");
+    else return rows[0];
+
 }
 
 export const getChoiceQuestion = async (questionId: number) => {
     const conn = await pool.connect();
 
     const query =`SELECT qid, uid, sid, question, answer1, answer2, answer3, answer4, solution  FROM questions 
-                    INNER JOIN choice_question ON questions.oqid = open_question.oqid 
+                    INNER JOIN choice_question ON questions.cqid = choice_question.cqid 
                     WHERE qid = ($1)`
     const values = [questionId];
 
     const { rows } = await conn.query<ChoiceQuestionExtended>(query, values);
     conn.release(); 
+
+    if(rows.length === 0){
+        throw new HttpException(404, "Question with given id doesn't exist");
+    }
 
     return rows[0];
 }

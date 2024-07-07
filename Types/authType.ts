@@ -36,7 +36,7 @@ declare module "express-session" {
 declare global {
     namespace Express {
       export interface Request {
-        userID?: string;
+        userID: string;
       }
     }
   }

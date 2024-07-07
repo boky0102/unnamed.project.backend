@@ -3,9 +3,6 @@ import { Subject } from "../../Types/subject.types";
 import { initializeDB, pool } from "../../services/db.services";
 import { deleteSubject, getSubjectsStartingWith, saveSubject } from "../../services/subject.services"
 
-beforeAll(async () => {
-    await initializeDB();
-})
 
 afterAll(async () => {
     await pool.end();
