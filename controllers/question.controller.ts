@@ -30,6 +30,8 @@ export const postChoiceQuestionController = async (req: Request, res: Response, 
 
         await saveChoiceQuestion(questionData, req.userID);
 
+        res.status(201).send();
+
     }catch(error){
         next(error);
     }

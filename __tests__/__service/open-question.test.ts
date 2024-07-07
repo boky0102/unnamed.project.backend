@@ -58,7 +58,7 @@ describe("Open question service should work properly", () => {
             await saveOpenQuestion(mockOpenQuestion, "e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8");
 
         }catch(error){
-            expect(error).toEqual(new HttpException(400, "Bad request"));
+            expect(error).toEqual(new HttpException(400, "Bad open question data provided, missing fields or too short question"));
         }
 
     });

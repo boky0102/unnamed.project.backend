@@ -46,7 +46,7 @@ export const saveOpenQuestion = async (questionData: OpenQuestionData, userId: s
         }
 
     } else {
-        throw new HttpException(400, "Bad request");
+        throw new HttpException(400, "Bad open question data provided, missing fields or too short question");
     }
 
 }
@@ -89,7 +89,7 @@ export const saveChoiceQuestion = async (questionData: ChoiceQuestionData, userI
             conn.release();    
         }
     } else {
-        throw new HttpException(400, "Bad choice question data provided");
+        throw new HttpException(400, "Bad choice question data provided, missing fields or too short question");
     }
 
     
