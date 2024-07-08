@@ -175,11 +175,13 @@ export const initializeDB = async () => {
             score INT,
             open_questions INT,
             choice_questions INT,
-            subject_id SERIAL NOT NULL,
+            sid SERIAL NOT NULL,
             CONSTRAINT fk_uid
                 FOREIGN KEY (uid)
-                    REFERENCES users(uid)
-            );
+                    REFERENCES users(uid),
+            CONSTRAINT sid
+                FOREIGN KEY (sid)
+                    REFERENCES subject(sid));
         `);
 
         // creates exam_question table in database
