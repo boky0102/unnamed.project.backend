@@ -224,7 +224,7 @@ export const initializeDB = async () => {
     }catch(error){
         console.log("Failed to create db, please check that you have .env file in project and that you have local postgres db running");
         console.log(error)
-        process.exit(1);  //terminates node process (shuts down server if db is not created successfully)
+        /* process.exit(1); */  //terminates node process (shuts down server if db is not created successfully)
     }
 }
 
