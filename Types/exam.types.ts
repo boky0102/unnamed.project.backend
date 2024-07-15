@@ -7,6 +7,11 @@ export type ExamDB = {
     subject_id: number
 }
 
+export type ExamData = {
+    open_questions: ExamOpenQuestion[],
+    choice_questions: ExamChoiceQuestion[]
+}
+
 export type ExamOpenQuestion = {
     qid: number,
     question: string

@@ -1,12 +1,17 @@
-import { ExamChoiceQuestion, ExamOpenQuestion } from "../Types/exam.types";
+import { ExamChoiceQuestion, ExamData, ExamOpenQuestion } from "../Types/exam.types";
 import { pool } from "./db.services"
 
-export const generateExam = async (subjectId: number, userId: number) => {
-    const connection = await pool.connect();
+export const generateExam = async (subjectId: number, userId: string, openQuestionsNumber: number, choiceQuestionsNumber: number) : Promise<ExamData> => {
     
-    connection.release();
+    const openQuestions = await getRandomOpenQuestions(openQuestionsNumber, subjectId);
+    const choiceQuestions = await getRandomChoiceQuestions(choiceQuestionsNumber,  subjectId);
 
-    
+    const examData: ExamData = {
+       open_questions: openQuestions,
+       choice_questions: choiceQuestions 
+    }
+
+    return examData;
 
 }   
 
