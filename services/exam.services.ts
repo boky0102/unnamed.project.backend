@@ -1,7 +1,7 @@
 import { ExamChoiceQuestion, ExamData, ExamOpenQuestion } from "../Types/exam.types";
 import { pool } from "./db.services"
 
-export const generateExam = async (subjectId: number, userId: string, openQuestionsNumber: number, choiceQuestionsNumber: number) : Promise<ExamData> => {
+export const generateExam = async (subjectId: number, openQuestionsNumber: number, choiceQuestionsNumber: number) : Promise<ExamData> => {
     
     const openQuestions = await getRandomOpenQuestions(openQuestionsNumber, subjectId);
     const choiceQuestions = await getRandomChoiceQuestions(choiceQuestionsNumber,  subjectId);
@@ -21,7 +21,8 @@ export const getRandomOpenQuestions = async (n: number, sid: number) => {
     const query = `SELECT qid, question FROM questions
                     INNER JOIN open_question ON questions.oqid = open_question.oqid
                         WHERE questions.sid = ($1)
-                            LIMIT ($2);`
+                            ORDER BY RANDOM()
+                                LIMIT ($2);`
 
     const values = [sid, n];
 
@@ -38,7 +39,8 @@ export const getRandomChoiceQuestions = async (n: number, sid: number) => {
     const query = `SELECT qid, question, answer1, answer2, answer3, answer4 FROM questions
                     INNER JOIN choice_question ON questions.cqid = choice_question.cqid
                         WHERE questions.sid = ($1)
-                            LIMIT ($2);`
+                            ORDER BY RANDOM()
+                                LIMIT ($2);`
     
     const values = [sid, n];
 
