@@ -145,7 +145,7 @@ export const initializeDB = async () => {
             CREATE TABLE IF NOT EXISTS questions(
             qid SERIAL PRIMARY KEY ,
             uid uuid NOT NULL,
-            sid SERIAL NOT NULL,
+            sid INTEGER NOT NULL,
             oqid INTEGER,
             cqid INTEGER,
             CONSTRAINT fk_open

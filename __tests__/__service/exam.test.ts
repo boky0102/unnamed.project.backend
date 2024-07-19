@@ -28,7 +28,6 @@ describe("Testing exam service", () => {
 
     test("Method for getting random choice question should return questions", async () => {
         const result = await getRandomChoiceQuestions(1,1);
-        console.log(result);
         expect(result).toMatchObject(
             [
                 {
@@ -45,13 +44,10 @@ describe("Testing exam service", () => {
 
     test("Method for generating exam should generate proper number of open and choice questions", async () => {
         const result = await generateExam(1, "e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8", 4, 4);
-        const numberOfChoice = result.choice_questions.reduce((sum, curr) => {
-            return sum++;
-        }, 0)
 
-        const numberOfOpen = result.open_questions.reduce((sum, curr) => sum++, 0);
+        expect(result.choice_questions.length).toBe(4);
+        expect(result.open_questions.length).toBe(4);
 
-        expect(numberOfChoice).toBe(4);
-        expect(numberOfOpen).toBe(4);
+
     } )
 })
