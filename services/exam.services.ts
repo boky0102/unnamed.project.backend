@@ -1,3 +1,4 @@
+import { HttpException } from "../Types/error";
 import { ExamChoiceQuestion, ExamData, ExamOpenQuestion } from "../Types/exam.types";
 import { pool } from "./db.services"
 
@@ -5,6 +6,10 @@ export const generateExam = async (subjectId: number, openQuestionsNumber: numbe
     
     const openQuestions = await getRandomOpenQuestions(openQuestionsNumber, subjectId);
     const choiceQuestions = await getRandomChoiceQuestions(choiceQuestionsNumber,  subjectId);
+
+    if(openQuestionsNumber > 50 || choiceQuestionsNumber > 50){
+        throw new HttpException(400, "Number of questions is too big, maximum is 50 per question type");
+    }
 
     const examData: ExamData = {
        open_questions: openQuestions,
@@ -27,8 +32,11 @@ export const getRandomOpenQuestions = async (n: number, sid: number) => {
     const values = [sid, n];
 
     const dbRes = await connection.query<ExamOpenQuestion>(query, values);
-
     connection.release();
+
+    if(dbRes.rowCount === null || dbRes.rowCount === 0){
+        throw new HttpException(404, "Subject id doesn't exist or there are no questions for given subject");
+    }
 
     return dbRes.rows;
 }

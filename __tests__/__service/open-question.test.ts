@@ -59,6 +59,7 @@ describe("Open question service should work properly", () => {
 
         }catch(error){
             expect(error).toEqual(new HttpException(400, "Bad open question data provided, missing fields or too short question"));
+
         }
 
     });
