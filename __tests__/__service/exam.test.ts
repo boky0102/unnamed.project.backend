@@ -16,12 +16,11 @@ describe("Testing exam service", () => {
     })
 
     test("Method for getting random open questions should throw an error if subject id doesn't exist", async() => {
-        try{
-            const result = await getRandomOpenQuestions(4, 999);
-            
-        }catch(error){
-            expect(error).toBeTruthy();
-        }
+
+        await expect(async () => {
+            return await getRandomOpenQuestions(4, 999);
+        }).rejects.toThrow();
+        
     })
 
     test("Method for getting random choice question should return questions", async () => {

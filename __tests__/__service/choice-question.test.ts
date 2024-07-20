@@ -84,14 +84,10 @@ describe("Question service should properly save and validate choice questions", 
 
     test("Should not get choice question given bad question id", async () => {
 
+        await expect(async () => {
+            return await getChoiceQuestion(8888);
+        }).rejects.toThrow(new HttpException(404, "Question with given id doesn't exist"));
 
-        try{
-
-            const questionData = await getChoiceQuestion(8888);
-
-        }catch(error){
-            expect(error).toEqual(new HttpException(404, "Question with given id doesn't exist"));
-        }
 
     })
 })

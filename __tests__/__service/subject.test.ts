@@ -25,28 +25,19 @@ describe("Subject service should handle saving subjects properly", () => {
 
     test("It should not save subject with same name", async() => {
 
-        try{
+        await expect(async () => {
+            return await saveSubject("Mechanics");
+        }).rejects.toThrow(new Error("Subject already exists in database"));
 
-            await saveSubject("Mechanics");
-
-        }catch(error){
-            expect(error).toEqual(
-                new Error("Subject already exists in database")
-            );
-        }
 
     });
 
     test("It should throw error if given subject name is too short (less than 4 chars)", async() => {
-        try{
-            
-            await saveSubject("Mec");
 
-        } catch(error){
-            expect(error).toEqual(
-                new Error("Subject name is too short")
-            );
-        }
+        await expect(async () => {
+            return await saveSubject("Mec")
+        }).rejects.toThrow(new Error("Subject name is too short"));
+        
     })
 });
 
@@ -70,12 +61,9 @@ describe("Subject service should handle getting subjects array that starts with 
 
     test("It should throw not found error if there is no subjects starting with given index", async () => {
 
-        try{
-            const subjects = await getSubjectsStartingWith("biology");
-        } catch(error){
-            expect(error).toEqual(new Error("No subjects start with given string"));
-        }
-
+        await expect(async () => {
+            return await getSubjectsStartingWith("biology");
+        }).rejects.toThrow(new Error("No subjects start with given string"));
 
     })
 })
