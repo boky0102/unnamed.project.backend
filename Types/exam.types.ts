@@ -27,3 +27,10 @@ export type ExamChoiceQuestion = {
     answer3: string,
     answer4: string
 }
+
+
+
+export type ExamQuestion = {
+    eid: number,
+    qid: number
+}

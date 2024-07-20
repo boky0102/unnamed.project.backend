@@ -5,6 +5,7 @@ import { deleteSubject, getSubjectsStartingWith, saveSubject } from "../../servi
 
 
 afterAll(async () => {
+    await initializeDB();
     await pool.end();
 })
 

@@ -1,9 +1,10 @@
 import { HttpException } from "../../Types/error";
 import { ChoiceQuestionData, Question } from "../../Types/question.types";
-import { pool } from "../../services/db.services";
+import { initializeDB, pool } from "../../services/db.services";
 import { getChoiceQuestion, saveChoiceQuestion, validateChoiceQuestionPostData } from "../../services/question.services";
 
 afterAll(async () => {
+    await initializeDB();
     await pool.end();
 })
 

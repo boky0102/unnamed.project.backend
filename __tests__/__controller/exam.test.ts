@@ -34,7 +34,7 @@ describe("ROUTE /exam", () => {
             expect(1).toBe(1);
         })
 
-        test("Respons should contain valid data with all necessary attributes", async () => {
+        test("Response should contain valid data with all necessary attributes", async () => {
             const response = await axiosAPIClient.get<ExamData>("/exam?open=5&choice=5&sid=1");
             expect(response.data.choice_questions.length).toBe(5);
             expect(response.data.open_questions.length).toBe(5);

@@ -1,9 +1,10 @@
-import { pool } from "../../services/db.services";
+import { initializeDB, pool } from "../../services/db.services";
 import { generateExam, getRandomChoiceQuestions, getRandomOpenQuestions } from "../../services/exam.services"
 import { HttpException } from "../../Types/error";
 
 
 afterAll(async () => {
+    await initializeDB();
     await pool.end();
 })
 
@@ -35,14 +36,14 @@ describe("Testing exam service", () => {
     })
 
     test("Method for generating exam should generate proper number of open and choice questions", async () => {
-        const result = await generateExam(1, 4, 4);
+        const result = await generateExam(1, 4, 4, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
 
         expect(result.choice_questions.length).toBe(4);
         expect(result.open_questions.length).toBe(4);
     });
 
     test("Method for generating exam should return data with all relevant properties", async () => {
-        const result = await generateExam(1, 1, 1);
+        const result = await generateExam(1, 1, 1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         
         expect(result.choice_questions[0]).toHaveProperty("question");
         expect(result.choice_questions[0]).toHaveProperty("qid");
@@ -59,17 +60,21 @@ describe("Testing exam service", () => {
 
     test("Method for generating exam should not generate exam and it should throw an error when given bad subject id", async () => {
         await expect(async () => {
-            return await generateExam(999, 1, 1);
+            return await generateExam(999, 1, 1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         }).rejects.toThrow(new HttpException(404, "Subject id doesn't exist or there are no questions for given subject"))
     })
 
     test("Method for generating exam should not generate exam and it should throw an error when given too big number of questions", async () => {
         await expect(async () => {
-            return await generateExam(1, 70, 1);
+            return await generateExam(1, 70, 1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         }).rejects.toThrow(new HttpException(400, "Number of questions is too big, maximum is 50 per question type"));
 
         await expect(async () => {
-            return await generateExam(1, 19, 100);
+            return await generateExam(1, 19, 100, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         }).rejects.toThrow(new HttpException(400, "Number of questions is too big, maximum is 50 per question type"));
+    })
+
+    test("1+1", () => {
+        expect(1).toBe(1);
     })
 })

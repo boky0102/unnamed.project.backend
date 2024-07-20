@@ -6,6 +6,7 @@ import { getOpenQuestion, saveOpenQuestion, validateOpenQuestionRequestData } fr
 
 
 afterAll(async () => {
+    await initializeDB();
     await pool.end();
 })
 
