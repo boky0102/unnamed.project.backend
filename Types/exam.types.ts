@@ -9,7 +9,9 @@ export type ExamDB = {
 
 export type ExamData = {
     open_questions: ExamOpenQuestion[],
-    choice_questions: ExamChoiceQuestion[]
+    choice_questions: ExamChoiceQuestion[],
+    eid: number,
+    sid: number
 }
 
 export type ExamOpenQuestion = {

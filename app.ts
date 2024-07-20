@@ -9,6 +9,7 @@ import { subjectRouter } from './routes/subject';
 import { initializeDB } from './services/db.services';
 import { log } from './utility/logger.utility';
 import { questionRouter } from './routes/question';
+import { examRouter } from './routes/exam';
 require('dotenv').config();
 
 
@@ -56,6 +57,7 @@ export const initializeWebServer = () => {
                 app.use("/dev", devRouter);
                 app.use("/subject", subjectRouter);
                 app.use("/question", questionRouter);
+                app.use("/exam", examRouter);
 
                 app.get("/", (req: Request, res: Response) => {
                     res.status(200).send("Route good");

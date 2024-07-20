@@ -56,6 +56,10 @@ export const getRandomChoiceQuestions = async (n: number, sid: number) => {
 
     connection.release();
 
+    if(dbRes.rowCount === null || dbRes.rowCount === 0){
+        throw new HttpException(404, "Subject id doesn't exist or there are no questions for given subject");
+    }
+
     return dbRes.rows;
 
     
