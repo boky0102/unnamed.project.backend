@@ -1,5 +1,5 @@
 import { HttpException } from "../Types/error";
-import { ExamChoiceQuestion, ExamData, ExamDB, ExamInfoData, ExamOpenQuestion, ExamPrettyData, ExamQuestion } from "../Types/exam.types";
+import { ExamChoiceQuestion, ExamData, ExamDB, ExamID, ExamInfoData, ExamOpenQuestion, ExamPagableData, ExamPrettyData, ExamQuestion } from "../Types/exam.types";
 import { parseQID } from "../utility/database.utility";
 import { pool } from "./db.services"
 import { DatabaseError } from "pg";
@@ -110,6 +110,7 @@ export const getRandomChoiceQuestions = async (n: number, sid: number) => {
 
 export const getExam = async (examID: number) : Promise<ExamPrettyData> => {
     const connection = await pool.connect();
+    if(!examID) console.log("Not a number")
 
     const examInfoQuery = `SELECT eid, subject.name, uid, open_questions, choice_questions FROM exam INNER JOIN subject ON exam.sid = subject.sid WHERE exam.eid = ($1)`;
     const examInfoValues = [examID];
@@ -144,5 +145,44 @@ export const getExam = async (examID: number) : Promise<ExamPrettyData> => {
         open_questions: examData.rows[0].open_questions,
         openQuestionData: examOpenQuestions.rows,
         choiceQuestionData: examChoiceQuestions.rows
+    }
+}
+
+export const getExamsBySubjectId = async (subjectID: number, page: number, itemsOnPage: number) :Promise<ExamPagableData> => {
+
+    if(page < 1 || itemsOnPage < 1){
+        throw new HttpException(400, "Bad request, page number and items per page must be positive numbers");
+    }
+
+    console.log(typeof subjectID, typeof page, typeof itemsOnPage);
+
+    const connection = await pool.connect();
+    const offset = itemsOnPage * (page - 1);
+    const examQuery = `SELECT eid FROM exam INNER JOIN subject ON exam.sid = subject.sid WHERE subject.sid = ($1) LIMIT ($2) OFFSET ($3)`;
+    const examValues = [subjectID, itemsOnPage, offset];
+    const examIDS = await connection.query<ExamID>(examQuery, examValues);
+
+    if(examIDS.rowCount === 0 || examIDS.rowCount === null){
+        connection.release();
+        throw new HttpException(404, "Exam with given subject id is not found or there are no results for the given page");
+    }
+
+    const examsArray = [] as ExamPrettyData[];
+
+    for(const examID of examIDS.rows){
+        console.log(examID);
+        const examData = await getExam(examID.eid);
+        examsArray.push(examData);
+    }
+
+
+
+    connection.release();
+
+    return {
+        sid: subjectID,
+        page: page,
+        pageLimit: itemsOnPage,
+        exams: examsArray
     }
 }

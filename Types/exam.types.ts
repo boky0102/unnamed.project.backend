@@ -33,6 +33,17 @@ export type ExamPrettyData = {
 
 }
 
+export type ExamPagableData = {
+    page: number,
+    pageLimit: number,
+    sid: number,
+    exams: ExamPrettyData[];
+}
+
+export type ExamID = {
+    eid: number
+}
+
 export type ExamOpenQuestion = {
     qid: number,
     question: string
