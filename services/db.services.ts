@@ -16,7 +16,6 @@ if(process.env.DB_LOCATION === "local"){
         port: Number(process.env.DB_PORT),
         max: 50,
         allowExitOnIdle: true,
-        idleTimeoutMillis: 200000
     });
 
     if(process.env.DEBUG_DB_POOL === "on"){
