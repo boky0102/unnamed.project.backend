@@ -1,6 +1,7 @@
 import { initializeDB, pool } from "../../services/db.services";
-import { generateExam, getRandomChoiceQuestions, getRandomOpenQuestions } from "../../services/exam.services"
+import { generateExam, getExam, getRandomChoiceQuestions, getRandomOpenQuestions } from "../../services/exam.services"
 import { HttpException } from "../../Types/error";
+import { ExamPrettyData } from "../../Types/exam.types";
 
 
 afterAll(async () => {
@@ -57,6 +58,14 @@ describe("Testing exam service", () => {
         
     });
 
+    test("Method for generating exam should generate exam even if number of one type of questions is 0", async () => {
+        const result = await generateExam(1, 0, 20, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        expect(result.open_questions.length).toBe(0);
+
+        const result2 = await generateExam(1, 10, 0, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        expect(result2.choice_questions.length).toBe(0);
+    })
+
 
     test("Method for generating exam should not generate exam and it should throw an error when given bad subject id", async () => {
         await expect(async () => {
@@ -74,7 +83,41 @@ describe("Testing exam service", () => {
         }).rejects.toThrow(new HttpException(400, "Number of questions is too big, maximum is 50 per question type"));
     })
 
-    test("1+1", () => {
-        expect(1).toBe(1);
+    test("Method for getting exam by id should return proper exam when given good exam id", async () => {
+        const examData = await getExam(1);
+        expect(examData).toMatchObject<ExamPrettyData>(
+            {
+                eid: 1,
+                subjectName: "Chemistry",
+                uid: "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0",
+                open_questions: 0,
+                choice_questions: 2,
+                openQuestionData: [],
+                choiceQuestionData: [
+                    {
+                        qid: 1,
+                        question: "What is 2 + 2?",
+                        answer1: "3",
+                        answer2: "4",
+                        answer3: "5",
+                        answer4: "6"
+                    },
+                    {
+                        qid: 3,
+                        question: "What year did World War II end?",
+                        answer1: "1945",
+                        answer2: "1939",
+                        answer3: "1941",
+                        answer4: "1950"
+                    }
+                ]
+            }
+        )
+    })
+
+    test("Method for getting exam should throw when given non existing exam id", async () => {
+        await expect(async () => {
+            return await getExam(999);
+        }).rejects.toThrow(new HttpException(404, "Exam with given id wasn't found"));
     })
 })

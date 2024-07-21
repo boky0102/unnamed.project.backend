@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpException } from "../Types/error";
-import { generateExam } from "../services/exam.services";
+import { generateExam, getExam } from "../services/exam.services";
 
 export const getExamController = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -21,6 +21,22 @@ export const getExamController = async (req: Request, res: Response, next: NextF
         }
         
         
+    }catch(error){
+        next(error);
+    }
+}
+
+export const getExamByIdController = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+
+        const id = req.params.id;
+        if(!id){
+            throw new HttpException(400, "No required parameter in the url");
+        } else {
+            const examData = await getExam(parseInt(id));
+            res.status(200).send(examData);
+        }
+
     }catch(error){
         next(error);
     }

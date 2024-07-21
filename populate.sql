@@ -150,7 +150,7 @@ INSERT INTO questions (uid, sid, oqid, cqid) VALUES
 -- Exam
 INSERT INTO exam (uid, score, open_questions, choice_questions, sid)
 VALUES
-    ('c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0', 85, 2, 4, 2),
+    ('c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0', 85, 0, 2, 2),
     ('e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8', 70, 3, 2, 3),
     ('c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0', 92, 1, 5, 1);
 

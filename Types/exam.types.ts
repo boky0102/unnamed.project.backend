@@ -14,6 +14,25 @@ export type ExamData = {
     sid: number
 }
 
+export type ExamInfoData = {
+    eid: number,
+    name: string,
+    uid: string,
+    open_questions: number,
+    choice_questions: number
+}
+
+export type ExamPrettyData = {
+    eid: number,
+    subjectName: string,
+    uid: string,
+    open_questions: number,
+    choice_questions: number,
+    openQuestionData?: ExamOpenQuestion[],
+    choiceQuestionData?: ExamChoiceQuestion[]
+
+}
+
 export type ExamOpenQuestion = {
     qid: number,
     question: string

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { initializeWebServer, stopWebServer } from "../../app";
 import { pool } from "../../services/db.services";
-import { ExamData } from "../../Types/exam.types";
+import { ExamData, ExamPrettyData } from "../../Types/exam.types";
 
 let axiosAPIClient: AxiosInstance;
 
@@ -86,8 +86,46 @@ describe("ROUTE /exam", () => {
         test("It should generate exam when number of avaliable questions is smaller than the one requested", async () => {
             const response = await axiosAPIClient.get<ExamData>("/exam?open=1&choice=40&sid=1");
             expect(response.status).toBe(200);
+        });
+
+
+
+    });
+    describe("  GET /{id}", () => {
+        test("It should return exam when given proper examID", async () => {
+            const response = await axiosAPIClient.get<ExamPrettyData>("/exam/1");
+            expect(response.data).toMatchObject<ExamPrettyData>(
+                {
+                    eid: 1,
+                    subjectName: "Chemistry",
+                    uid: "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0",
+                    open_questions: 0,
+                    choice_questions: 2,
+                    openQuestionData: [],
+                    choiceQuestionData: [
+                        {
+                            qid: 1,
+                            question: "What is 2 + 2?",
+                            answer1: "3",
+                            answer2: "4",
+                            answer3: "5",
+                            answer4: "6"
+                        },
+                        {
+                            qid: 3,
+                            question: "What year did World War II end?",
+                            answer1: "1945",
+                            answer2: "1939",
+                            answer3: "1941",
+                            answer4: "1950"
+                        }
+                    ]
+                }
+            )
         })
-
-
+        test("It should not return data and respond with status code 404 when provided with wrong exam id", async() => {
+            const response = await axiosAPIClient.get<ExamPrettyData>("/exam/999");
+            expect(response.status).toBe(404);
+        })
     })
 })
