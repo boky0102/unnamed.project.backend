@@ -29,7 +29,6 @@ describe("ROUTE /question", () => {
     describe(" GET /open-ended", () => {
         test("It should respond with open-ended question data when given valid question id", async () => {
             const response = await axiosAPIClient.get<OpenQuestion>("/question/open-ended/2");
-            console.log(response.data);
             expect(response).toMatchObject({
                 status: 200,
                 data: 

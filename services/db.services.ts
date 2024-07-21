@@ -1,6 +1,6 @@
 
 require('dotenv').config();
-import { Pool, Client } from 'pg';
+import { Pool, Client, DatabaseError } from 'pg';
 import fs from "fs";
 import { log } from '../utility/logger.utility';
 
@@ -13,8 +13,37 @@ if(process.env.DB_LOCATION === "local"){
         host: process.env.DB_HOST,
         database: process.env.DB_NAME,
         password: process.env.DB_PASSWORD,
-        port: Number(process.env.DB_PORT)
+        port: Number(process.env.DB_PORT),
+        max: 50,
+        allowExitOnIdle: true,
     });
+
+    if(process.env.DEBUG_DB_POOL === "on"){
+        pool.on("connect", (client) => {
+            console.log("POOL CONNECTED", `Current connections : ${pool.totalCount}  Waiting: ${pool.waitingCount}`);
+        })
+    
+        pool.on("acquire", (client) => {
+            console.log("CLIENT AQUIRED FROM POOL", `Current connections : ${pool.totalCount}  Waiting: ${pool.waitingCount}`);
+        })
+    
+        pool.on("release", (err, client) => {
+            if(err){
+                console.log(err);
+            }else {
+                console.log("CLIENT RELEASED FROM POOL",  `Current connections : ${pool.totalCount}  Waiting: ${pool.waitingCount}`);
+            }
+        })
+    
+        pool.on("remove", (client) => {
+            console.log("CLIENT REMOVED FROM POOL", `Current connections : ${pool.totalCount}  Waiting: ${pool.waitingCount}`);
+        });
+    
+        pool.on("error", (err, client) => {
+            console.log(err, err.stack);
+        })
+    }
+    
     
 } else if (process.env.DB_LOCATION === "remote"){
     pool = new Pool({
@@ -24,6 +53,8 @@ if(process.env.DB_LOCATION === "local"){
         }
     });
 }
+
+
 
 
 
@@ -145,7 +176,7 @@ export const initializeDB = async () => {
             CREATE TABLE IF NOT EXISTS questions(
             qid SERIAL PRIMARY KEY ,
             uid uuid NOT NULL,
-            sid SERIAL NOT NULL,
+            sid INTEGER NOT NULL,
             oqid INTEGER,
             cqid INTEGER,
             CONSTRAINT fk_open
@@ -175,11 +206,13 @@ export const initializeDB = async () => {
             score INT,
             open_questions INT,
             choice_questions INT,
-            subject_id SERIAL NOT NULL,
+            sid SERIAL NOT NULL,
             CONSTRAINT fk_uid
                 FOREIGN KEY (uid)
-                    REFERENCES users(uid)
-            );
+                    REFERENCES users(uid),
+            CONSTRAINT sid
+                FOREIGN KEY (sid)
+                    REFERENCES subject(sid));
         `);
 
         // creates exam_question table in database

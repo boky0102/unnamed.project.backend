@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import supertest from "supertest";
 import { initializeWebServer, stopWebServer } from "../../app";
 import { pool } from "../../services/db.services";
 

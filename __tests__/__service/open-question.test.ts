@@ -6,6 +6,7 @@ import { getOpenQuestion, saveOpenQuestion, validateOpenQuestionRequestData } fr
 
 
 afterAll(async () => {
+    await initializeDB();
     await pool.end();
 })
 
@@ -47,19 +48,14 @@ describe("Open question service should work properly", () => {
 
     test("Should not save open question data with invalid data", async() => {
 
-
         const mockOpenQuestion: OpenQuestionData = {
             question: "",
             sid: 3
         }
 
-        try{
-
-            await saveOpenQuestion(mockOpenQuestion, "e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8");
-
-        }catch(error){
-            expect(error).toEqual(new HttpException(400, "Bad open question data provided, missing fields or too short question"));
-        }
+        await expect(async () => {
+            return await saveOpenQuestion(mockOpenQuestion, "e136f9a8-4bbf-4a70-91a3-0d39fd0f34b8");
+        }).rejects.toThrow(new HttpException(400, "Bad open question data provided, missing fields or too short question"));
 
     });
 
@@ -75,11 +71,11 @@ describe("Open question service should work properly", () => {
     })
 
     test("Should not get open question with wrong question id", async() => {
-        try{
-            const question = await getOpenQuestion(999);
-        } catch(error){
-            expect(error).toEqual(new HttpException(404, "Question with given id doesn't exist"));
-        }
+
+
+        await expect(async () => {
+            return await getOpenQuestion(999);
+        }).rejects.toThrow(new HttpException(404, "Question with given id doesn't exist"))
         
     })
 })

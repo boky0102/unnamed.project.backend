@@ -1,9 +1,10 @@
 import { HttpException } from "../../Types/error";
 import { ChoiceQuestionData, Question } from "../../Types/question.types";
-import { pool } from "../../services/db.services";
+import { initializeDB, pool } from "../../services/db.services";
 import { getChoiceQuestion, saveChoiceQuestion, validateChoiceQuestionPostData } from "../../services/question.services";
 
 afterAll(async () => {
+    await initializeDB();
     await pool.end();
 })
 
@@ -84,14 +85,10 @@ describe("Question service should properly save and validate choice questions", 
 
     test("Should not get choice question given bad question id", async () => {
 
+        await expect(async () => {
+            return await getChoiceQuestion(8888);
+        }).rejects.toThrow(new HttpException(404, "Question with given id doesn't exist"));
 
-        try{
-
-            const questionData = await getChoiceQuestion(8888);
-
-        }catch(error){
-            expect(error).toEqual(new HttpException(404, "Question with given id doesn't exist"));
-        }
 
     })
 })

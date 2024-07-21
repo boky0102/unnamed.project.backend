@@ -1,5 +1,4 @@
 require('dotenv').config();
-import { initializeDB } from './services/db.services';
 import  { initializeWebServer } from './app';
 import { log } from './utility/logger.utility';
 
