@@ -204,7 +204,6 @@ export const initializeDB = async () => {
             CREATE TABLE IF NOT EXISTS exam(
             eid SERIAL PRIMARY KEY,
             uid uuid,
-            score INT,
             open_questions INT,
             choice_questions INT,
             sid SERIAL NOT NULL,

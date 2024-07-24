@@ -170,7 +170,6 @@ export const getExamsBySubjectId = async (subjectID: number, page: number, items
     const examsArray = [] as ExamPrettyData[];
 
     for(const examID of examIDS.rows){
-        console.log(examID);
         const examData = await getExam(examID.eid);
         examsArray.push(examData);
     }

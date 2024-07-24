@@ -2,6 +2,7 @@ import { DatabaseError } from "pg";
 import { HttpException } from "../Types/error";
 import { SolutionDB, SolutionDBCamelCase } from "../Types/solution.types";
 import { pool } from "./db.services"
+import { httpExceptionHandler } from "../middleware/error.middleware";
 
 export const getSolution = async (solutionId: number) :Promise<SolutionDBCamelCase> =>  {
     const connection = await pool.connect();
@@ -26,6 +27,34 @@ export const getSolution = async (solutionId: number) :Promise<SolutionDBCamelCa
         checkedBy: dbRes.rows[0].checked_by,
         finished: dbRes.rows[0].finished
     };
+}
+
+export const getSolutionsByUserId = async (userId: string) : Promise<SolutionDBCamelCase[]> => {
+    const connection = await pool.connect();
+    const query = `SELECT   solution_id AS "solutionId",
+                            solution.eid,
+                            allow_random_review AS "allowRandomReview",
+                            score,
+                            share_url AS "shareUrl",
+                            pass_code AS "passCode",
+                            solved_by AS "solvedBy",
+                            checked_by AS "checkedBy",
+                            finished,
+                            subject.name AS "subjectName"
+                    FROM solution
+                    INNER JOIN exam ON exam.eid = solution.eid
+                    INNER JOIN subject ON exam.sid = subject.sid
+                    WHERE solution.solved_by = ($1)
+    `
+    const values = [userId];
+    const dbRes = await connection.query<SolutionDBCamelCase>(query, values);
+    connection.release();
+
+    if(dbRes.rowCount === 0 || dbRes.rowCount === null){
+        throw new HttpException(404, "There are no solutions made by given user");
+    } else {
+        return dbRes.rows;
+    }
 }
 
 export const generateSolution = async (examId: number, solverUserId: string, randomReviewer: boolean) => {

@@ -1,5 +1,5 @@
 import { initializeDB, pool } from "../../services/db.services";
-import { generateSolution, getSolution } from "../../services/solution.services";
+import { generateSolution, getSolution, getSolutionsByUserId } from "../../services/solution.services";
 import { HttpException } from "../../Types/error";
 import { SolutionDB, SolutionDBCamelCase } from "../../Types/solution.types";
 
@@ -11,7 +11,6 @@ afterAll(async () => {
 describe("Testing services for handling with solution data", () => {
     test("Method for getting solution should return solution when provided with valid id", async () => {
         const solution = await getSolution(1);
-        console.log(solution);
         expect(solution).toMatchObject<SolutionDBCamelCase>({
             eid: 1,
             solutionId: 1,
@@ -35,6 +34,16 @@ describe("Testing services for handling with solution data", () => {
             return await generateSolution(999, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0", true)
         }).rejects.toThrow(new HttpException(400, "Exam or user with given id does not exist"));
     });
+
+    test("Method for getting solutions created by given user should return all solutions made by user", async () => {
+        const solutions = await getSolutionsByUserId("c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        solutions.forEach((solution) => {
+            expect(solution).toHaveProperty("solutionId");
+            expect(solution).toHaveProperty("eid");
+            expect(solution).toHaveProperty("solvedBy");
+            expect(solution).toHaveProperty("allowRandomReview");
+        })
+    })
 
 })
 
