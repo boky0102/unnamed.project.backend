@@ -1,4 +1,5 @@
 import { initializeDB, pool } from "../../services/db.services";
+import { getExam } from "../../services/exam.services";
 import { generateSolution, getSolution, getSolutionsByUserId } from "../../services/solution.services";
 import { HttpException } from "../../Types/error";
 import { SolutionDB, SolutionDBCamelCase } from "../../Types/solution.types";
@@ -13,11 +14,14 @@ describe("Testing services for handling with solution data", () => {
         const solution = await getSolution(1);
         const now = new Date();
 
+        const exam = await getExam(solution.eid);
+
         expect(solution.eid).toBe(1);
         expect(solution.solutionId).toBe(1);
         expect(solution.passCode).toBe("random-pass-code");
         expect(solution.solvedBy).toBe("c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         expect(solution.allowRandomReview).toBe(true);
+        expect(solution.examData).toMatchObject(exam);
 
         const timeDiff = solution.startedAt.getTime() - now.getTime();
         expect(Math.abs(timeDiff) < 1000).toBe(true);

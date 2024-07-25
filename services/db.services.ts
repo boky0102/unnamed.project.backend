@@ -262,6 +262,7 @@ export const initializeDB = async () => {
             solution_id INTEGER NOT NULL,
             qid INTEGER NOT NULL,
             user_answer TEXT,
+            correct BOOLEAN DEFAULT '0',
             PRIMARY KEY (solution_id, qid),
             CONSTRAINT fk_solution_id
                 FOREIGN KEY (solution_id)

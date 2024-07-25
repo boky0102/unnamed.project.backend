@@ -1,10 +1,11 @@
 import { DatabaseError } from "pg";
 import { HttpException } from "../Types/error";
-import { SolutionDB, SolutionDBCamelCase } from "../Types/solution.types";
+import { SolutionDB, SolutionDBCamelCase, SolutionExamData } from "../Types/solution.types";
 import { pool } from "./db.services"
 import { httpExceptionHandler } from "../middleware/error.middleware";
+import { getExam } from "./exam.services";
 
-export const getSolution = async (solutionId: number) :Promise<SolutionDBCamelCase> =>  {
+export const getSolution = async (solutionId: number) : Promise<SolutionExamData> => {
     const connection = await pool.connect();
     const query = `SELECT * FROM solution WHERE solution_id = ($1)`;
     const values =[solutionId];
@@ -14,20 +15,27 @@ export const getSolution = async (solutionId: number) :Promise<SolutionDBCamelCa
 
     if(dbRes.rowCount === 0 || dbRes.rowCount === null){
         throw new HttpException(404, "Solution with given id does not exist");
+    } else {
+
+        const examData = await getExam(dbRes.rows[0].eid);
+
+        return {
+            eid: dbRes.rows[0].eid,
+            solutionId: dbRes.rows[0].solution_id,
+            allowRandomReview: dbRes.rows[0].allow_random_review,
+            score: dbRes.rows[0].score,
+            shareUrl: dbRes.rows[0].share_url,
+            passCode: dbRes.rows[0].pass_code,
+            solvedBy: dbRes.rows[0].solved_by,
+            checkedBy: dbRes.rows[0].checked_by,
+            finished: dbRes.rows[0].finished,
+            startedAt: dbRes.rows[0].started_at,
+            examData: examData
+        };
+
     }
 
-    return {
-        eid: dbRes.rows[0].eid,
-        solutionId: dbRes.rows[0].solution_id,
-        allowRandomReview: dbRes.rows[0].allow_random_review,
-        score: dbRes.rows[0].score,
-        shareUrl: dbRes.rows[0].share_url,
-        passCode: dbRes.rows[0].pass_code,
-        solvedBy: dbRes.rows[0].solved_by,
-        checkedBy: dbRes.rows[0].checked_by,
-        finished: dbRes.rows[0].finished,
-        startedAt: dbRes.rows[0].started_at
-    };
+    
 }
 
 export const getSolutionsByUserId = async (userId: string) : Promise<SolutionDBCamelCase[]> => {
@@ -58,6 +66,10 @@ export const getSolutionsByUserId = async (userId: string) : Promise<SolutionDBC
         return dbRes.rows;
     }
 }
+
+/* export const getSolutionsByUserIdAndSubjectId = async (userId: string, subjectId: number) : Promise<SolutionDBCamelCase[]> => {
+
+} */
 
 export const generateSolution = async (examId: number, solverUserId: string, randomReviewer: boolean) => {
 
