@@ -244,6 +244,7 @@ export const initializeDB = async () => {
             solved_by uuid NOT NULL,
             checked_by uuid,
             finished BOOLEAN,
+            started_at TIMESTAMP DEFAULT NOW()::timestamp,
             CONSTRAINT fk_uid
                 FOREIGN KEY(solved_by)
                     REFERENCES users(uid),

@@ -25,7 +25,8 @@ export const getSolution = async (solutionId: number) :Promise<SolutionDBCamelCa
         passCode: dbRes.rows[0].pass_code,
         solvedBy: dbRes.rows[0].solved_by,
         checkedBy: dbRes.rows[0].checked_by,
-        finished: dbRes.rows[0].finished
+        finished: dbRes.rows[0].finished,
+        startedAt: dbRes.rows[0].started_at
     };
 }
 
@@ -39,6 +40,7 @@ export const getSolutionsByUserId = async (userId: string) : Promise<SolutionDBC
                             pass_code AS "passCode",
                             solved_by AS "solvedBy",
                             checked_by AS "checkedBy",
+                            started_at AS "startedAt",
                             finished,
                             subject.name AS "subjectName"
                     FROM solution

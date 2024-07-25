@@ -11,13 +11,16 @@ afterAll(async () => {
 describe("Testing services for handling with solution data", () => {
     test("Method for getting solution should return solution when provided with valid id", async () => {
         const solution = await getSolution(1);
-        expect(solution).toMatchObject<SolutionDBCamelCase>({
-            eid: 1,
-            solutionId: 1,
-            passCode: "random-pass-code",
-            solvedBy: "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0",
-            allowRandomReview: true
-        })
+        const now = new Date();
+
+        expect(solution.eid).toBe(1);
+        expect(solution.solutionId).toBe(1);
+        expect(solution.passCode).toBe("random-pass-code");
+        expect(solution.solvedBy).toBe("c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        expect(solution.allowRandomReview).toBe(true);
+
+        const timeDiff = solution.startedAt.getTime() - now.getTime();
+        expect(Math.abs(timeDiff) < 1000).toBe(true);
     });
     test("Method for getting solution should throw when provided with non existing solution id", async () => {
         await expect(async () => {
@@ -43,6 +46,11 @@ describe("Testing services for handling with solution data", () => {
             expect(solution).toHaveProperty("solvedBy");
             expect(solution).toHaveProperty("allowRandomReview");
         })
+    })
+    test("Method for getting solutions by user id should throw when given non existing user id", async () => {
+        await expect(async () => {
+            return await getSolutionsByUserId("c1f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        }).rejects.toThrow(new HttpException(400, "There are no solutions made by given user"))
     })
 
 })
