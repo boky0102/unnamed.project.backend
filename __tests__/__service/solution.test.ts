@@ -1,6 +1,6 @@
 import { initializeDB, pool } from "../../services/db.services";
 import { getExam } from "../../services/exam.services";
-import { generateSolution, getSolution, getSolutionsByUserId } from "../../services/solution.services";
+import { generateSolution, getSolution, getSolutionsByUserId, saveAnswer } from "../../services/solution.services";
 import { HttpException } from "../../Types/error";
 import { SolutionDB, SolutionDBCamelCase } from "../../Types/solution.types";
 
@@ -49,12 +49,30 @@ describe("Testing services for handling with solution data", () => {
             expect(solution).toHaveProperty("eid");
             expect(solution).toHaveProperty("solvedBy");
             expect(solution).toHaveProperty("allowRandomReview");
+            expect(solution).toHaveProperty("subjectName");
+            expect(solution).toHaveProperty("startedAt");
         })
     })
     test("Method for getting solutions by user id should throw when given non existing user id", async () => {
         await expect(async () => {
             return await getSolutionsByUserId("c1f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         }).rejects.toThrow(new HttpException(400, "There are no solutions made by given user"))
+    })
+
+    test("Method for saving solution to the question should save question successfully", async () => {
+        const solutionAnswerSaved = await saveAnswer(1, 1, "4", "choice");
+        expect(solutionAnswerSaved).toBe(true);
+        const changeAnswer = await saveAnswer(1,1,"3", "choice");
+        expect(changeAnswer).toBe(true);
+    });
+    test("Method for saving solution of the question should throw if given invalid qid or solutionId parameters", async () => {
+        await expect(async () => {
+            return await saveAnswer(999,1,"4","choice");
+        }).rejects.toThrow(new HttpException(400, "Invalid given parameters, given solutionId or qid don't exist in the db"));
+
+        await expect(async () => {
+            return await saveAnswer(1, 9999, "3", "choice");
+        }).rejects.toThrow(new HttpException(400, "Invalid given parameters, given solutionId or qid don't exist in the db"));
     })
 
 })

@@ -1,6 +1,6 @@
 import { DatabaseError } from "pg";
 import { HttpException } from "../Types/error";
-import { SolutionDB, SolutionDBCamelCase, SolutionExamData } from "../Types/solution.types";
+import { solutionAnswerDb, SolutionDB, SolutionDBCamelCase, SolutionExamData } from "../Types/solution.types";
 import { pool } from "./db.services"
 import { httpExceptionHandler } from "../middleware/error.middleware";
 import { getExam } from "./exam.services";
@@ -67,9 +67,6 @@ export const getSolutionsByUserId = async (userId: string) : Promise<SolutionDBC
     }
 }
 
-/* export const getSolutionsByUserIdAndSubjectId = async (userId: string, subjectId: number) : Promise<SolutionDBCamelCase[]> => {
-
-} */
 
 export const generateSolution = async (examId: number, solverUserId: string, randomReviewer: boolean) => {
 
@@ -98,4 +95,40 @@ export const generateSolution = async (examId: number, solverUserId: string, ran
         }
     }
     
+}
+
+export const saveAnswer = async (solutionId: number, qid: number, answer: string, type: "choice" | "open") => {
+
+
+    const connection = await pool.connect();
+
+    if(type === "choice"){
+        const query = "INSERT INTO solution_answer (solution_id, qid, user_answer) VALUES ($1, $2, $3);";
+        const values = [solutionId, qid, answer];
+
+        try{
+            const dbRes = await connection.query<solutionAnswerDb>(query, values);
+            return true;
+        } catch(error){
+            if(error instanceof DatabaseError){
+                if(error.code === "23505"){ // composite primary key already exists
+                    try{
+                        const query = "UPDATE solution_answer SET user_answer = ($1) WHERE solution_id = ($2) AND qid = ($3)";
+                        const values = [answer, solutionId, qid];
+                        const dbRes = await connection.query<solutionAnswerDb>(query, values);
+                        return true;
+                    }catch(error){
+                        console.log(error);
+                        throw new HttpException(500, "Error updating answers solution");
+                    }
+                } else{
+                    throw new HttpException(400, "Invalid given parameters, given solutionId or qid don't exist in the db");
+                }
+                 // update answer
+            }
+        } finally{
+            connection.release();
+        }
+        
+    }
 }

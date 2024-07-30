@@ -46,3 +46,10 @@ type ChoiceQuestion = {
 export interface SolutionExamData extends SolutionDBCamelCase {
     examData: ExamPrettyData
 }
+
+export type solutionAnswerDb = {
+    solution_id: number,
+    qid: number,
+    user_answer: string,
+    correct?: boolean
+}
