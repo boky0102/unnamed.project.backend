@@ -1,7 +1,7 @@
 import { HttpException } from "../../Types/error";
 import { ChoiceQuestionData, Question } from "../../Types/question.types";
 import { initializeDB, pool } from "../../services/db.services";
-import { getChoiceQuestion, saveChoiceQuestion, validateChoiceQuestionPostData } from "../../services/question.services";
+import { getChoiceQuestion, getChoiceQuestionAnswers, saveChoiceQuestion, validateChoiceQuestionPostData } from "../../services/question.services";
 
 afterAll(async () => {
     await initializeDB();
@@ -90,5 +90,19 @@ describe("Question service should properly save and validate choice questions", 
         }).rejects.toThrow(new HttpException(404, "Question with given id doesn't exist"));
 
 
+    })
+
+    test("Method for getting choice question answers should work properly", async () => {
+        const choiceAnswers = await getChoiceQuestionAnswers(1);
+        expect(choiceAnswers).toMatchObject([
+            {
+                qid: 1,
+                solution: 2
+            },
+            {
+                qid: 3,
+                solution: 1
+            }
+        ]);
     })
 })

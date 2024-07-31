@@ -1,9 +1,10 @@
 import { DatabaseError } from "pg";
 import { HttpException } from "../Types/error";
-import { solutionAnswerDb, SolutionDB, SolutionDBCamelCase, SolutionExamData } from "../Types/solution.types";
+import { solutionAnswerDb, SolutionAnswerObject, SolutionChoiceAnswer, SolutionDB, SolutionDBCamelCase, SolutionExamData } from "../Types/solution.types";
 import { pool } from "./db.services"
-import { httpExceptionHandler } from "../middleware/error.middleware";
 import { getExam } from "./exam.services";
+import { getChoiceQuestionAnswers } from "./question.services";
+import { ChoiceQuestionAnswer } from "../Types/question.types";
 
 export const getSolution = async (solutionId: number) : Promise<SolutionExamData> => {
     const connection = await pool.connect();
@@ -97,38 +98,104 @@ export const generateSolution = async (examId: number, solverUserId: string, ran
     
 }
 
-export const saveAnswer = async (solutionId: number, qid: number, answer: string, type: "choice" | "open") => {
+export const commitSolution = async (solutionId: number, userId: string) => {
+    const connection = await pool.connect();
+
+    const examIdQuery = "SELECT eid FROM solution WHERE solution_id = ($1) AND solved_by = ($2)";
+    const examValues = [solutionId, userId];
+    const examIdDbRes = await connection.query<{eid: number}>(examIdQuery, examValues);
+
+    if(examIdDbRes.rowCount === 0 || examIdDbRes.rowCount === null){
+        throw new HttpException(404, "Can't find exam with given solution id");
+    } else {
+        
+        const choiceQuestionAnswers = await getChoiceQuestionAnswers(examIdDbRes.rows[0].eid);
+
+        const userChoiceQuestionAnswers = await getSolutionChoiceQuestions(solutionId);
+
+        //CONTINUE
+
+        const query = "UPDATE solution SET finished = '1' WHERE solution_id = ($1) AND solved_by = ($2)";
+        const values = [solutionId, userId];
+
+        const dbRes = await connection.query<any>(query, values);
+
+        connection.release();
+    }
+    
+
+}
+
+export const saveAnswer = async (solutionId: number, qid: number, answer: string, userId : string) => {
 
 
     const connection = await pool.connect();
 
-    if(type === "choice"){
-        const query = "INSERT INTO solution_answer (solution_id, qid, user_answer) VALUES ($1, $2, $3);";
-        const values = [solutionId, qid, answer];
+    const query = "SELECT finished FROM solution WHERE solution_id = ($1) AND solved_by = ($2)";
+    const values = [solutionId, userId];
+    const dbRes = await connection.query<{finished: boolean}>(query, values);
 
-        try{
-            const dbRes = await connection.query<solutionAnswerDb>(query, values);
-            return true;
-        } catch(error){
-            if(error instanceof DatabaseError){
-                if(error.code === "23505"){ // composite primary key already exists
-                    try{
-                        const query = "UPDATE solution_answer SET user_answer = ($1) WHERE solution_id = ($2) AND qid = ($3)";
-                        const values = [answer, solutionId, qid];
-                        const dbRes = await connection.query<solutionAnswerDb>(query, values);
-                        return true;
-                    }catch(error){
-                        console.log(error);
-                        throw new HttpException(500, "Error updating answers solution");
-                    }
-                } else{
-                    throw new HttpException(400, "Invalid given parameters, given solutionId or qid don't exist in the db");
-                }
-                 // update answer
-            }
-        } finally{
+    if(dbRes.rowCount === null || dbRes.rowCount !== 1){
+        connection.release();
+        throw new HttpException(400, "Solution with given id does not exist");
+    } else {
+        const completed = dbRes.rows[0].finished;
+        if(completed){
             connection.release();
-        }
+            throw new HttpException(400, "Solution with given id has already been solved");
+            
+        } else {
+    
+            const query = "INSERT INTO solution_answer (solution_id, qid, user_answer) VALUES ($1, $2, $3);";
+            const values = [solutionId, qid, answer];
+    
+            try{
+                const dbRes = await connection.query<solutionAnswerDb>(query, values);
+                return true;
+            } catch(error){
+                if(error instanceof DatabaseError){
+                    if(error.code === "23505"){ // composite primary key already exists
+                        try{
+                            const query = "UPDATE solution_answer SET user_answer = ($1) WHERE solution_id = ($2) AND qid = ($3)";
+                            const values = [answer, solutionId, qid];
+                            const dbRes = await connection.query<solutionAnswerDb>(query, values);
+                            return true;
+                        }catch(error){
+                            console.log(error);
+                            throw new HttpException(500, "Error updating answers solution");
+                        }
+                    } else{
+                        throw new HttpException(400, "Invalid given parameters, given solutionId or qid don't exist in the db");
+                    }
+                }
+            } finally{
+                connection.release();
+            }
+            
         
+        }
     }
+    
+}
+
+export const getSolutionChoiceQuestions = async (solutionId: number) :Promise<SolutionAnswerObject> => {
+    const connection = await pool.connect();
+    const query = `SELECT solution_answer.qid, user_answer FROM solution_answer
+                    INNER JOIN questions ON questions.qid = solution_answer.qid
+                    WHERE questions.cqid IS NOT NULL AND solution_answer.solution_id = ($1)`;
+    const values = [solutionId];
+
+    const { rows } = await connection.query<SolutionChoiceAnswer>(query, values);
+
+    connection.release();
+
+    const rowsObject = rows.reduce((agg, curr) => {
+        return {
+            ...agg,
+            [curr.qid] : curr.user_answer
+        }
+    }, {})
+    
+
+    return rowsObject;
 }

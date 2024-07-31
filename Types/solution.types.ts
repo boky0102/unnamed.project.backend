@@ -53,3 +53,12 @@ export type solutionAnswerDb = {
     user_answer: string,
     correct?: boolean
 }
+
+export type SolutionChoiceAnswer = {
+    qid: number,
+    user_answer: string
+}
+
+export type  SolutionAnswerObject = {
+    [key: number] : string
+}

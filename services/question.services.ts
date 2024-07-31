@@ -1,5 +1,5 @@
 import { HttpException } from "../Types/error";
-import {ChoiceQuestion, ChoiceQuestionData, ChoiceQuestionExtended, OpenQuestion, OpenQuestionData, OpenQuestionExtended, Question} from "../Types/question.types";
+import {ChoiceQuestion, ChoiceQuestionAnswer, ChoiceQuestionData, ChoiceQuestionExtended, OpenQuestion, OpenQuestionData, OpenQuestionExtended, Question} from "../Types/question.types";
 import { log } from "../utility/logger.utility";
 import { pool } from "./db.services";
 
@@ -128,4 +128,23 @@ export const getChoiceQuestion = async (questionId: number) => {
     }
 
     return rows[0];
+}
+
+export const getChoiceQuestionAnswers = async (examId: number) :Promise<ChoiceQuestionAnswer[] | undefined> => {
+    const connection = await pool.connect();
+    const query = `SELECT choice_question.solution, questions.qid FROM exam_question
+                    INNER JOIN exam ON exam_question.eid = exam.eid
+                    INNER JOIN questions ON exam_question.qid = questions.qid
+                    INNER JOIN choice_question ON choice_question.cqid = questions.cqid
+                    WHERE exam.eid = ($1)`;
+    const values = [examId];
+    const dbRes = await connection.query<ChoiceQuestionAnswer>(query, values);
+
+    connection.release();
+
+    if(dbRes.rowCount === 0 ||dbRes.rowCount === null){
+        return undefined;
+    } else {
+        return dbRes.rows;
+    }
 }
