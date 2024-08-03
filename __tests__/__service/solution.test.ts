@@ -1,9 +1,9 @@
 import { initializeDB, pool } from "../../services/db.services";
 import { getExam } from "../../services/exam.services";
-import { commitSolution, generateSolution, getSolution, getSolutionChoiceQuestions, getSolutionsByUserId, saveAnswer } from "../../services/solution.services";
+import { commitSolution, generateSolution, getSolution, getSolutionChoiceQuestions, getSolutionsByUserId, getSolutionUserAnswers, saveAnswer } from "../../services/solution.services";
 import { HttpException } from "../../Types/error";
 import { ChoiceQuestionAnswer } from "../../Types/question.types";
-import { SolutionAnswerObject, SolutionChoiceAnswer, SolutionDB, SolutionDBCamelCase } from "../../Types/solution.types";
+import { SolutionAnswerObject, SolutionAnswersObject, SolutionChoiceAnswer, SolutionDB, SolutionDBCamelCase } from "../../Types/solution.types";
 
 afterAll(async () => {
     await initializeDB();
@@ -87,6 +87,32 @@ describe("Testing services for handling with solution data", () => {
         await commitSolution(1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         const solution = await getSolution(1);
         expect(solution.finished).toBe(true);
+    });
+    test("Method for commiting solution should check all choice question answers when commited", async () => {
+        const solutionId = await generateSolution(1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0", true);
+        await saveAnswer(solutionId, 1, "2", "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        await saveAnswer(solutionId, 3, "4", "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        await commitSolution(solutionId, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        const userSolutionsChecked = await getSolutionUserAnswers(solutionId);
+        expect(userSolutionsChecked).toMatchObject<SolutionAnswersObject>({
+            1: {
+                correct: true,
+                userAnswer: "2"
+            },
+            3: {
+                correct: false,
+                userAnswer: "4"
+            }
+        })
+    });
+    test("Method for commiting solution should throw if given non-existing solution id or user id", async () => {
+        await expect(async () => {
+            await commitSolution(999, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        }).rejects.toThrow(new HttpException(404, "Can't find exam with given solution id"));
+
+        await expect(async () => {
+            await commitSolution(1, "d0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        }).rejects.toThrow(new HttpException(404, "Can't find exam with given solution id"));
     })
 
     test("Method for getting solution's choice questions and answers should return valid data", async () => {
@@ -100,6 +126,21 @@ describe("Testing services for handling with solution data", () => {
         });
     })
 
+    test("Method for getting solution answers should return valid data", async() => {
+        const solutionId = await generateSolution(1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0", true);
+        await saveAnswer(solutionId, 1, "2", "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        await saveAnswer(solutionId, 3, "4", "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
+        const userAnswers = await getSolutionUserAnswers(solutionId);
+        expect(userAnswers).toMatchObject<SolutionAnswersObject>({
+            1: {
+                userAnswer: "2",
+
+            },
+            3: {
+                userAnswer: "4",
+            }
+        });
+    })
 
 
 })

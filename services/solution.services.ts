@@ -99,6 +99,7 @@ export const generateSolution = async (examId: number, solverUserId: string, ran
 }
 
 export const commitSolution = async (solutionId: number, userId: string) => {
+
     const connection = await pool.connect();
 
     const examIdQuery = "SELECT eid FROM solution WHERE solution_id = ($1) AND solved_by = ($2)";
@@ -106,6 +107,7 @@ export const commitSolution = async (solutionId: number, userId: string) => {
     const examIdDbRes = await connection.query<{eid: number}>(examIdQuery, examValues);
 
     if(examIdDbRes.rowCount === 0 || examIdDbRes.rowCount === null){
+        connection.release();
         throw new HttpException(404, "Can't find exam with given solution id");
     } else {
         
@@ -113,7 +115,18 @@ export const commitSolution = async (solutionId: number, userId: string) => {
 
         const userChoiceQuestionAnswers = await getSolutionChoiceQuestions(solutionId);
 
-        //CONTINUE
+        if(choiceQuestionAnswers){
+            for(const goodAnswer of choiceQuestionAnswers){
+                let query = "";
+                if(userChoiceQuestionAnswers[goodAnswer.qid] === goodAnswer.solution.toString()){
+                    query = "UPDATE solution_answer SET correct = TRUE WHERE solution_id = ($1) AND qid = ($2)";
+                }else{
+                    query = "UPDATE solution_answer SET correct = FALSE WHERE solution_id = ($1) AND qid = ($2)";
+                }
+                const values = [solutionId, goodAnswer.qid];
+                const dbRes = await connection.query(query, values);
+            }
+        }
 
         const query = "UPDATE solution SET finished = '1' WHERE solution_id = ($1) AND solved_by = ($2)";
         const values = [solutionId, userId];
@@ -198,4 +211,29 @@ export const getSolutionChoiceQuestions = async (solutionId: number) :Promise<So
     
 
     return rowsObject;
+}
+
+export const getSolutionUserAnswers = async (solutionId: number) => {
+    const connection = await pool.connect();
+    const query = "SELECT * FROM solution_answer WHERE solution_id = ($1)";
+    const values = [solutionId];
+    const dbRes = await connection.query<solutionAnswerDb>(query, values);
+    connection.release();
+
+    if(dbRes.rowCount === 0 || dbRes.rowCount === null){
+        throw new HttpException(404, "Can't find solution asnwers for given solution id");
+    } else {
+        const answersObject : SolutionAnswerObject = dbRes.rows.reduce((agg, curr) => {
+            return {
+                ...agg,
+                [curr.qid] : {
+                    correct: curr.correct,
+                    userAnswer: curr.user_answer
+                }
+            }
+        }, {});
+
+        return answersObject;
+
+    }
 }

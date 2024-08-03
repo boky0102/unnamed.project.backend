@@ -50,8 +50,15 @@ export interface SolutionExamData extends SolutionDBCamelCase {
 export type solutionAnswerDb = {
     solution_id: number,
     qid: number,
-    user_answer: string,
+    user_answer?: string,
     correct?: boolean
+}
+
+export type SolutionAnswersObject = {
+    [key: number] : {
+        correct?: boolean,
+        userAnswer: string
+    }
 }
 
 export type SolutionChoiceAnswer = {
