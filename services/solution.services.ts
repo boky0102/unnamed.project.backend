@@ -1,6 +1,6 @@
 import { DatabaseError } from "pg";
 import { HttpException } from "../Types/error";
-import { solutionAnswerDb, SolutionAnswerObject, SolutionChoiceAnswer, SolutionDB, SolutionDBCamelCase, SolutionExamData } from "../Types/solution.types";
+import { solutionAnswerDb, SolutionAnswerObject, SolutionChoiceAnswer, SolutionDB, SolutionDBCamelCase, SolutionExamData, SolutionReviewElement } from "../Types/solution.types";
 import { pool } from "./db.services"
 import { getExam } from "./exam.services";
 import { getChoiceQuestionAnswers } from "./question.services";
@@ -236,4 +236,15 @@ export const getSolutionUserAnswers = async (solutionId: number) => {
         return answersObject;
 
     }
+}
+
+export const reviewAnswers = async (solutionId: number, solutionReviews: SolutionReviewElement[]) => {
+    const connection = await pool.connect();
+    for(const questionData of solutionReviews){
+        const query = "UPDATE solution_answer SET correct = ($1) WHERE solution_answer.qid = ($2) AND solution_answer.solution_id = ($3)";
+        const values = [questionData.correct, questionData.qid, solutionId];
+        const dbRes = await connection.query<any>(query, values);
+    }
+
+    connection.release();
 }

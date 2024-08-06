@@ -69,3 +69,8 @@ export type SolutionChoiceAnswer = {
 export type  SolutionAnswerObject = {
     [key: number] : string
 }
+
+export type SolutionReviewElement = {
+    qid: number,
+    correct: boolean
+};

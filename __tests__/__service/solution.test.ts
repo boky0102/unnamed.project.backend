@@ -2,8 +2,7 @@ import { initializeDB, pool } from "../../services/db.services";
 import { getExam } from "../../services/exam.services";
 import { commitSolution, generateSolution, getSolution, getSolutionChoiceQuestions, getSolutionsByUserId, getSolutionUserAnswers, saveAnswer } from "../../services/solution.services";
 import { HttpException } from "../../Types/error";
-import { ChoiceQuestionAnswer } from "../../Types/question.types";
-import { SolutionAnswerObject, SolutionAnswersObject, SolutionChoiceAnswer, SolutionDB, SolutionDBCamelCase } from "../../Types/solution.types";
+import { SolutionAnswerObject, SolutionAnswersObject } from "../../Types/solution.types";
 
 afterAll(async () => {
     await initializeDB();
