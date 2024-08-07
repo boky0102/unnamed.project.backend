@@ -12,7 +12,6 @@ afterAll(async () => {
 describe("Testing services for handling with solution data", () => {
     test("Method for getting solution should return solution when provided with valid id", async () => {
         const solution = await getSolution(1);
-        const now = new Date();
 
         const exam = await getExam(solution.eid);
 
@@ -22,9 +21,9 @@ describe("Testing services for handling with solution data", () => {
         expect(solution.solvedBy).toBe("c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         expect(solution.allowRandomReview).toBe(true);
         expect(solution.examData).toMatchObject(exam);
+        expect(solution.startedAt).toMatchObject(new Date(2024, 4, 5, 12));
 
-        const timeDiff = solution.startedAt.getTime() - now.getTime();
-        expect(Math.abs(timeDiff) < 1000).toBe(true);
+        
     });
     test("Method for getting solution should throw when provided with non existing solution id", async () => {
         await expect(async () => {
@@ -33,8 +32,16 @@ describe("Testing services for handling with solution data", () => {
     })
  
     test("Method for generating a new solution should create new solution when provided with valid data", async () => {
+        const now = new Date();
+
         const newSolutionId = await generateSolution(1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0", true);
         expect(newSolutionId).toBe(3);
+        const newSolution = await getSolution(3);
+
+        const timeDiff = newSolution.startedAt.getTime() - now.getTime();
+        expect(Math.abs(timeDiff) < 1000).toBe(true);
+
+        
     })
     test("Method for generating a new solution should throw when given non existing exam id", async () => {
         await expect(async () => {
