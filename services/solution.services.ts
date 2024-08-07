@@ -238,6 +238,8 @@ export const getSolutionUserAnswers = async (solutionId: number) => {
     }
 }
 
+
+// needs testing and expansion
 export const reviewAnswers = async (solutionId: number, solutionReviews: SolutionReviewElement[]) => {
     const connection = await pool.connect();
     for(const questionData of solutionReviews){

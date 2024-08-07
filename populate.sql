@@ -164,6 +164,7 @@ VALUES
     (3, 3, '1945'),
     (3, 2, 'Discuss the causes of the American Civil War');
 
+-- Solution
 INSERT INTO solution (eid, allow_random_review, pass_code, solved_by)
 VALUES 
     (1, '1', 'random-pass-code', 'c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0'),
