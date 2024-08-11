@@ -35,11 +35,12 @@ describe("Testing services for handling with solution data", () => {
         const now = new Date();
 
         const newSolutionId = await generateSolution(1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0", true);
-        expect(newSolutionId).toBe(3);
-        const newSolution = await getSolution(3);
+
+        const newSolution = await getSolution(newSolutionId);
 
         const timeDiff = newSolution.startedAt.getTime() - now.getTime();
         expect(Math.abs(timeDiff) < 1000).toBe(true);
+        expect(newSolution.solutionId).toBe(newSolutionId);
 
         
     })

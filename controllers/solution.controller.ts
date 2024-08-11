@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { getSolution, getSolutionsByUserId } from "../services/solution.services";
+import { generateSolution, getSolution, getSolutionsByUserId } from "../services/solution.services";
 import { HttpException } from "../Types/error";
+import { httpExceptionHandler } from "../middleware/error.middleware";
 
 export const getSolutionController = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -26,6 +27,31 @@ export const getAllSolutionsController = async (req: Request, res: Response, nex
             throw new HttpException(401, "Cannot get solutions while unauthorized");
         }
         
+    }catch(error){
+        next(error);
+    }
+}
+
+export const generateSolutionController = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+
+        const userId = req.userID;
+        const examId = req.body.examId;
+        const randomReviewer = req.body.randomReviewer;
+
+        if(!userId || !examId || randomReviewer === undefined){
+            throw new HttpException(400, "Request query parameters missing/wrong or user unauthenticated");
+        } else {
+
+            if(typeof examId !== "number" || typeof randomReviewer !== "boolean"){
+                throw new HttpException(400, "Exam id must be a number and random reviewer should be boolean");
+            } else {
+                const newSolutionId = await generateSolution(examId, userId, randomReviewer);
+                res.status(201).json({
+                    solutionId: newSolutionId
+                }).send();
+            }
+        }
     }catch(error){
         next(error);
     }

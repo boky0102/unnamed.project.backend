@@ -108,4 +108,48 @@ describe("ROUTE /solution", () => {
             expect(response.status).toBe(404);
         })
     })
+
+    describe(" POST /solution/generate", () => {
+        test("Route for posting data for generating solution should generate new solution when provided with good data", async () => {
+            const data = {
+                examId: 1,
+                randomReviewer: true
+            }
+            const response = await axiosAPIClient.post("/solution/generate", data);
+            expect(response.status).toBe(201);
+
+            const getResponse = await axiosAPIClient.get(`/solution/${response.data.solutionId}`);
+            expect(getResponse.status).toBe(200);
+        })
+        test("Route for generating new solution should not generate new solution if provided with invalid data", async () => {
+            const data = {
+                examId: "1",
+                randomReviewer: true
+            };
+            const response = await axiosAPIClient.post("solution/generate", data);
+            expect(response.status).toBe(400);
+
+            const data2 = {
+                examId: 1,
+                randomReviewer: "fff"
+            };
+            const response2 = await axiosAPIClient.post("solution/generate", data2);
+            expect(response2.status).toBe(400);
+
+            const data3 = {
+                randomReviewer: true
+            }
+            const response3 = await axiosAPIClient.post("solution/generate", data3);
+            expect(response3.status).toBe(400);
+        })
+        test("Route for generating new solution should not generate new solution if non provided with non-existing exam id", async () => {
+            const data = {
+                examId: 999,
+                randomReviwer: true
+            }
+            const response = await axiosAPIClient.post("solution/generate", data);
+            expect(response.status).toBe(400);
+        })
+        
+    })
 })
