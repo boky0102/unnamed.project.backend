@@ -152,4 +152,14 @@ describe("ROUTE /solution", () => {
         })
         
     })
+
+    describe("POST /solution/save-answer", () => {
+        test("Route for saving solution answer should save answer when provided with valid data", async () => {
+            const data = {
+                solutionId: 1,
+                qid: 1,
+                answer: "2"
+            };
+        })
+    })
 })

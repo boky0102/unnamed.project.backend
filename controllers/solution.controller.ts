@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { generateSolution, getSolution, getSolutionsByUserId } from "../services/solution.services";
+import { generateSolution, getSolution, getSolutionsByUserId, saveAnswer } from "../services/solution.services";
 import { HttpException } from "../Types/error";
 import { httpExceptionHandler } from "../middleware/error.middleware";
 
@@ -52,6 +52,28 @@ export const generateSolutionController = async (req: Request, res: Response, ne
                 }).send();
             }
         }
+    }catch(error){
+        next(error);
+    }
+}
+
+export const saveSolutionAnswerController = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+
+        const userID = req.userID;
+        const { solutionId, qid, answer } = req.body;
+
+        if(!userID || !solutionId || !qid || !answer){
+            throw new HttpException(400, "Missing values in request body, please make sure solution id, question id and answer text are present");
+        } else {
+            if(typeof solutionId !== "number" || typeof qid !== "number" || typeof answer !== "string"){
+                throw new HttpException(400, "Request data object contains wrong types on properties");
+            } else {
+                await saveAnswer(solutionId, qid, answer, userID);
+                res.status(200).send();
+            }
+        }
+
     }catch(error){
         next(error);
     }
