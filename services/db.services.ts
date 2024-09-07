@@ -102,6 +102,8 @@ export const initializeDB = async () => {
                 log.error("DB dropping needs to be tuned off while working with remote database");
             } else {
                 await database.query("DROP TABLE IF EXISTS exam_question");
+                await database.query("DROP TABLE IF EXISTS solution_answer");
+                await database.query("DROP TABLE IF EXISTS solution");
                 await database.query("DROP TABLE IF EXISTS exam");
                 await database.query("DROP TABLE IF EXISTS questions");
                 await database.query("DROP TABLE IF EXISTS open_question");
@@ -110,7 +112,6 @@ export const initializeDB = async () => {
                 await database.query("DROP TABLE IF EXISTS users");
             log.info("OLD DB dropped");
             }
-            
         }
 
 
@@ -203,7 +204,6 @@ export const initializeDB = async () => {
             CREATE TABLE IF NOT EXISTS exam(
             eid SERIAL PRIMARY KEY,
             uid uuid,
-            score INT,
             open_questions INT,
             choice_questions INT,
             sid SERIAL NOT NULL,
@@ -230,6 +230,48 @@ export const initializeDB = async () => {
                     REFERENCES questions(qid)
             );
         `);
+
+
+        // creates solution table in database
+        await database.query(`
+            CREATE TABLE IF NOT EXISTS solution(
+            solution_id SERIAL PRIMARY KEY,
+            eid INTEGER NOT NULL,
+            allow_random_review BOOLEAN,
+            score INT,
+            share_url TEXT,
+            pass_code TEXT,
+            solved_by uuid NOT NULL,
+            checked_by uuid,
+            status VARCHAR(10) DEFAULT 'solving',
+            started_at TIMESTAMP DEFAULT NOW()::timestamp,
+            CONSTRAINT fk_uid
+                FOREIGN KEY(solved_by)
+                    REFERENCES users(uid),
+            CONSTRAINT fk_uidd
+                FOREIGN KEY(checked_by)
+                    REFERENCES users(uid),
+            CONSTRAINT fk_eid
+                FOREIGN KEY(eid)
+                    REFERENCES exam(eid));
+        `);
+
+
+        await database.query(`
+            CREATE TABLE IF NOT EXISTS solution_answer(
+            solution_id INTEGER NOT NULL,
+            qid INTEGER NOT NULL,
+            user_answer TEXT,
+            correct BOOLEAN DEFAULT NULL,
+            PRIMARY KEY (solution_id, qid),
+            CONSTRAINT fk_solution_id
+                FOREIGN KEY (solution_id)
+                    REFERENCES solution (solution_id),
+            CONSTRAINT fk_qid
+                FOREIGN KEY (qid)
+                    REFERENCES questions (qid)
+            );
+            `)
 
         log.info("DB initialized successfully");
 

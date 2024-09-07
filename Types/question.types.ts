@@ -65,3 +65,7 @@ export type ChoiceQuestionData = {
     sid: number
 };
 
+export type ChoiceQuestionAnswer = {
+    qid: number,
+    solution: number
+}
