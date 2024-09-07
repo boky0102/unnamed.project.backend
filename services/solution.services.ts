@@ -4,7 +4,6 @@ import { solutionAnswerDb, SolutionAnswerObject, SolutionChoiceAnswer, SolutionD
 import { pool } from "./db.services"
 import { getExam } from "./exam.services";
 import { getChoiceQuestionAnswers } from "./question.services";
-import { ChoiceQuestionAnswer } from "../Types/question.types";
 
 export const getSolution = async (solutionId: number) : Promise<SolutionExamData> => {
     const connection = await pool.connect();
@@ -29,7 +28,7 @@ export const getSolution = async (solutionId: number) : Promise<SolutionExamData
             passCode: dbRes.rows[0].pass_code,
             solvedBy: dbRes.rows[0].solved_by,
             checkedBy: dbRes.rows[0].checked_by,
-            finished: dbRes.rows[0].finished,
+            status: dbRes.rows[0].status,
             startedAt: dbRes.rows[0].started_at,
             examData: examData
         };
@@ -50,7 +49,7 @@ export const getSolutionsByUserId = async (userId: string) : Promise<SolutionDBC
                             solved_by AS "solvedBy",
                             checked_by AS "checkedBy",
                             started_at AS "startedAt",
-                            finished,
+                            status,
                             subject.name AS "subjectName"
                     FROM solution
                     INNER JOIN exam ON exam.eid = solution.eid
@@ -128,7 +127,7 @@ export const commitSolution = async (solutionId: number, userId: string) => {
             }
         }
 
-        const query = "UPDATE solution SET finished = '1' WHERE solution_id = ($1) AND solved_by = ($2)";
+        const query = "UPDATE solution SET status = 'review' WHERE solution_id = ($1) AND solved_by = ($2)";
         const values = [solutionId, userId];
 
         const dbRes = await connection.query<any>(query, values);
@@ -144,16 +143,16 @@ export const saveAnswer = async (solutionId: number, qid: number, answer: string
 
     const connection = await pool.connect();
 
-    const query = "SELECT finished FROM solution WHERE solution_id = ($1) AND solved_by = ($2)";
+    const query = "SELECT status FROM solution WHERE solution_id = ($1) AND solved_by = ($2)";
     const values = [solutionId, userId];
-    const dbRes = await connection.query<{finished: boolean}>(query, values);
+    const dbRes = await connection.query<{status: "review" | "solving" | "completed"}>(query, values);
 
     if(dbRes.rowCount === null || dbRes.rowCount !== 1){
         connection.release();
         throw new HttpException(400, "Solution with given id does not exist");
     } else {
-        const completed = dbRes.rows[0].finished;
-        if(completed){
+        const status = dbRes.rows[0].status;
+        if(status !== "solving"){
             connection.release();
             throw new HttpException(400, "Solution with given id has already been solved");
             

@@ -10,7 +10,7 @@ export type SolutionDB = {
     score?: number,
     share_url?: string,
     pass_code?: string,
-    finished?: boolean,
+    status: "solving" | "review" | "completed",
     checked_by?: string
      
 }
@@ -24,7 +24,7 @@ export interface SolutionDBCamelCase  {
     score?: number,
     shareUrl?: string,
     passCode?: string,
-    finished?: boolean,
+    status: "solving" | "review" | "completed",
     checkedBy?: string
 }
 

@@ -93,7 +93,7 @@ describe("Testing services for handling with solution data", () => {
     test("Method for commiting solution should update solution as finished", async () => {
         await commitSolution(1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0");
         const solution = await getSolution(1);
-        expect(solution.finished).toBe(true);
+        expect(solution.status).toBe("review");
     });
     test("Method for commiting solution should check all choice question answers when commited", async () => {
         const solutionId = await generateSolution(1, "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0", true);

@@ -243,7 +243,7 @@ export const initializeDB = async () => {
             pass_code TEXT,
             solved_by uuid NOT NULL,
             checked_by uuid,
-            finished BOOLEAN DEFAULT FALSE,
+            status VARCHAR(10) DEFAULT 'solving',
             started_at TIMESTAMP DEFAULT NOW()::timestamp,
             CONSTRAINT fk_uid
                 FOREIGN KEY(solved_by)

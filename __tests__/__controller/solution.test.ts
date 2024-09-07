@@ -57,7 +57,7 @@ describe("ROUTE /solution", () => {
             expect(response.data.eid).toBe(1)
             expect(response.data.allowRandomReview).toBe(true);
             expect(response.data.passCode).toBe("random-pass-code");
-            expect(response.data.finished).toBe(false);
+            expect(response.data.status).toBe("solving");
             expect(response.data).toHaveProperty("examData");
             const examData = await getExam(1);
             expect(response.data.examData).toMatchObject(examData);
@@ -83,7 +83,7 @@ describe("ROUTE /solution", () => {
                     allowRandomReview: true,
                     passCode: "random-pass-code",
                     solvedBy: "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0",
-                    finished: false,
+                    status: "solving",
                     startedAt: "2024-05-05T10:00:00.000Z"
                 },
                 {
@@ -92,7 +92,7 @@ describe("ROUTE /solution", () => {
                     allowRandomReview: false,
                     passCode: "random-pass-code",
                     solvedBy: "c0f3d84e-79e0-4e69-ae72-ae3bc78b61d0",
-                    finished: false,
+                    status: "solving",
                     startedAt: "2024-05-05T10:00:00.000Z"
                 }
             ])
