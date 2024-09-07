@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { generateSolution, getSolution, getSolutionsByUserId, saveAnswer } from "../services/solution.services";
+import { commitSolution, generateSolution, getSolution, getSolutionsByUserId, saveAnswer } from "../services/solution.services";
 import { HttpException } from "../Types/error";
 import { httpExceptionHandler } from "../middleware/error.middleware";
+import { pool } from "../services/db.services";
+import { userRouter } from "../routes/users";
 
 export const getSolutionController = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -74,6 +76,22 @@ export const saveSolutionAnswerController = async (req: Request, res: Response, 
             }
         }
 
+    }catch(error){
+        next(error);
+    }
+}
+
+export const commitSolutionController = async (req: Request, res: Response, next: NextFunction) => {
+    try{
+        const userID = req.userID;
+        const solutionID = parseInt(req.params.solutionid);
+        console.log(userID, solutionID);
+        if(!userID || !solutionID || typeof solutionID !== "number"){
+            throw new HttpException(400, "Bad url parameters");
+        } else{
+            await commitSolution(solutionID, userID);
+            res.status(200).send();
+        }
     }catch(error){
         next(error);
     }

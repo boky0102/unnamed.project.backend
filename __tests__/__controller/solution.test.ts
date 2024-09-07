@@ -153,6 +153,7 @@ describe("ROUTE /solution", () => {
         
     })
 
+    //finish
     describe("POST /solution/save-answer", () => {
         test("Route for saving solution answer should save answer when provided with valid data", async () => {
             const data = {
@@ -160,6 +161,16 @@ describe("ROUTE /solution", () => {
                 qid: 1,
                 answer: "2"
             };
+        })
+    })
+
+    describe("POST /solution/commit/:solutionID", () => {
+        test("Route for commiting solution should commit solution properly", async () => {
+            const response = await axiosAPIClient.post("solution/commit/1");
+            expect(response.status).toBe(200);
+
+            const solutionResponse = await axiosAPIClient.get<SolutionExamData>("/solution/1");
+            console.log(solutionResponse.data);
         })
     })
 })
