@@ -118,3 +118,12 @@ export const loginController = (req: Request, res: Response, next: NextFunction)
     }
 
 }
+
+export const logoutController = (req: Request, res: Response, next: NextFunction) => {
+    try{
+        res.clearCookie("token");
+        res.status(200).send();
+    }catch(error){
+        next(error);
+    }
+}

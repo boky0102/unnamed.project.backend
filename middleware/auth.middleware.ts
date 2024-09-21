@@ -69,7 +69,10 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
                          throw new HttpException(401, "Cookie is not present");
                     }
      
+                    console.log("cookie string", cookiesString);
                     const cookieObj = await parseCookie(cookiesString) as TokenCookie;
+
+                    console.log("Cookie obj", cookieObj);
      
                     
                          
