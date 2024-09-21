@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import {getDataFromDiscord} from "../services/auth.services";
-import {checkIfUserExistsByDiscordId, registerUser} from "../services/user.service";
+import {checkIfUserExistsByDiscordId, registerUser} from "../services/user.services";
 import jsonwebtoken from "jsonwebtoken";
 import {HttpException} from "../Types/error";
 require('dotenv').config();
@@ -27,6 +27,7 @@ export const authController = async (req: Request, res: Response, next: NextFunc
 
         // extracting data from link
         const code = req.query.code as string;
+        console.log(code);
 
         const userData = await getDataFromDiscord(code);
 

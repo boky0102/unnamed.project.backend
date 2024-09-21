@@ -44,7 +44,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
           try{
 
                const cookieString = req.headers.cookie;
-               if(!cookieString){
+               if(!cookieString || cookieString === ""){
                     throw new HttpException(401, "Dev mode error, please send cookie with your request named 'token' and containing user id which should be 'authenticated'");
 
                }
@@ -78,10 +78,12 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
                          if(err){
                               
                               if(err instanceof TokenExpiredError){
-                                   res.status(401).send("Cookie not good anymore");
+                                   /* res.status(401).send("Cookie not good anymore"); */
+                                   throw new HttpException(401, "Cookie not good anymore");
                               } else{
                                    res.clearCookie("token");
-                                   res.status(401).send("Unauthorized");
+                                   throw new HttpException(401, "Unauthorized");
+                                   /* res.status(401).send("Unauthorized"); */
                               }
      
                          }
@@ -105,6 +107,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
                
      
           } catch(error){
+               console.log("auth error here");
                next(error);
           }
      }
