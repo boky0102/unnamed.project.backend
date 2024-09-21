@@ -48,7 +48,7 @@ export const registerUser = async (userData: UserAuthData):Promise<string> => {
 
     const client = await pool.connect();
 
-    const query = "INSERT INTO users(username, discordID, avatarID, auth_token) VALUES ($1, $2, $3, $4) RETURNING uid";
+    const query = "INSERT INTO users(username, discordID, avatar, auth_token) VALUES ($1, $2, $3, $4) RETURNING uid";
     const values = [userData.username, userData.id, userData.avatar, userData.refresh_token];
 
     const dbres = await client.query<User>(query, values);
@@ -60,3 +60,19 @@ export const registerUser = async (userData: UserAuthData):Promise<string> => {
     }
 
 };
+
+export const getUser = async (userID: string) => {
+    const client = await pool.connect();
+    
+    const query = "SELECT username, avatar FROM users WHERE uid = ($1)";
+    const values = [userID];
+
+    const dbResponse = await client.query(query, values);
+
+    client.release();
+    if(dbResponse.rowCount !== 1){
+        throw new HttpException(404, "User doesn't exist");
+    }else{
+        return dbResponse.rows[0];
+    }
+}

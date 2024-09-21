@@ -11,6 +11,7 @@ import { log } from './utility/logger.utility';
 import { questionRouter } from './routes/question';
 import { examRouter } from './routes/exam';
 import { solutionRouter } from './routes/solution';
+import { logRequest } from './middleware/request.middleware';
 require('dotenv').config();
 
 
@@ -31,12 +32,16 @@ export const initializeWebServer = () => {
                 
                 const app = express();
 
-                app.use(express.json()); // Parse incoming requests data
+                const whitelist: string[] = [process.env.FRONTEND_URL!!, "https://discord.com/oauth2", "http://localhost"];
 
                 app.use(cors<Request>({
-                    origin:  process.env.FORNTEND_URL,
+                    origin: whitelist[0],
                     credentials: true
                 }))
+
+                app.use(express.json()); // Parse incoming requests data
+
+                
 
                 app.use(express.urlencoded({
                     extended: true
@@ -47,6 +52,11 @@ export const initializeWebServer = () => {
                 }
 
                 app.set('view engine', "ejs");
+
+                if(process.env.LOG_REQUESTS === "on"){
+                    app.use(logRequest);
+                }
+                
 
 
                 app.use(logErrors); // middleware for logging errors

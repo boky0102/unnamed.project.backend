@@ -8,8 +8,7 @@ import { log } from "../utility/logger.utility";
     error handling middleware
 */
 export const logErrors = (err: any, req: Request, res: Response, next: NextFunction) => {
-    log.error(err);
-    log.error(err.stack);
+    log.error(JSON.stringify(err));
     next(err);
 }
 
@@ -23,6 +22,7 @@ export const logErrors = (err: any, req: Request, res: Response, next: NextFunct
     error to default error handler with function next(err)
 */
 export const httpExceptionHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+    log.error(JSON.stringify(err));
     if(err instanceof HttpException){
         res.status(err.status).send(err.message);
     }else{
@@ -36,6 +36,7 @@ export const httpExceptionHandler = (err: any, req: Request, res: Response, next
     It responds with status code 500 and gives message Internal server error.
 */
 export const defaultErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+    log.error(JSON.stringify(err));
     res.status(500).send("Internal server error");
 }
 

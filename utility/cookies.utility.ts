@@ -8,10 +8,12 @@ export const parseCookie = async (cookieString: string) : Promise<CookieObject> 
     const cookieObject = cookieString.split(";").reduce((obj, curr) => {
 
         const [name, value] = curr.split("=");
+        const nameWithoutSpaces = name.replace(/\s+/g, '');
+        const valueWithoutSpaces = value.replace(/\s+/g, '');
 
         return {
             ...obj,
-            [name] : value
+            [nameWithoutSpaces] : valueWithoutSpaces
         }
 
     }, {} as CookieObject);

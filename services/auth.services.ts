@@ -22,7 +22,7 @@ export const getDataFromDiscord = async (code: string): Promise<UserAuthData> =>
         if(process.env.APP_MODE === "prod"){
             redirectURI = "https://unnamedapp-cf0ce93cede1.herokuapp.com/auth"
         } else{
-            redirectURI = "https://localhost:3000/auth"
+            redirectURI = "http://localhost:3001/auth"
         }
         
 
