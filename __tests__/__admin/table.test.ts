@@ -16,7 +16,6 @@ describe("Testing object keys parsing into array", () => {
 
         expect(arrayOfKeys.length).toBe(3);
 
-
     })
 
 })
