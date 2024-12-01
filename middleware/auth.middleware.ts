@@ -1,16 +1,15 @@
-import {Request, Response, NextFunction} from "express";
-import {HttpException} from "../Types/error";
+import { Request, Response, NextFunction } from "express";
+import { HttpException } from "../Types/error";
 import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 import { parseCookie } from "../utility/cookies.utility";
 
 type customJwtPayload = {
-     id: string
-}
+    id: string;
+};
 
 type TokenCookie = {
-     token: string
-}
-
+    token: string;
+};
 
 /*
      This is a middleware function that handles authentication of all requests
@@ -38,84 +37,61 @@ type TokenCookie = {
 */
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+    if (process.env.SECURITY_OAUTH === "off") {
+        try {
+            const cookieString = req.headers.cookie;
+            if (!cookieString || cookieString === "") {
+                throw new HttpException(
+                    401,
+                    "Dev mode error, please send cookie with your request named 'token' and containing user id which should be 'authenticated'"
+                );
+            }
 
-     if(process.env.SECURITY_OAUTH === "off"){
+            const cookieObj = (await parseCookie(cookieString)) as TokenCookie;
 
-          try{
+            req.userID = cookieObj.token;
 
-               const cookieString = req.headers.cookie;
-               if(!cookieString || cookieString === ""){
-                    throw new HttpException(401, "Dev mode error, please send cookie with your request named 'token' and containing user id which should be 'authenticated'");
+            next();
+        } catch (error) {
+            next(error);
+        }
+    } else {
+        try {
+            if (process.env.JWT_SECRET && process.env.SECURITY_OAUTH === "on") {
+                const cookiesString = req.headers.cookie;
 
-               }
+                if (!cookiesString) {
+                    throw new HttpException(401, "Cookie is not present");
+                }
 
-               const cookieObj = await parseCookie(cookieString) as TokenCookie;
+                const cookieObj = (await parseCookie(cookiesString)) as TokenCookie;
 
-               req.userID = cookieObj.token;
-
-               next();
-
-          }catch(error){
-               next(error);
-          }
-     } else {
-          try{
-               if(process.env.JWT_SECRET && process.env.SECURITY_OAUTH === "on"){
-     
-     
-                    const cookiesString = req.headers.cookie;
-     
-                    if(!cookiesString){
-                         throw new HttpException(401, "Cookie is not present");
+                jsonwebtoken.verify(cookieObj.token, process.env.JWT_SECRET, (err, decoded) => {
+                    if (err) {
+                        if (err instanceof TokenExpiredError) {
+                            /* res.status(401).send("Cookie not good anymore"); */
+                            throw new HttpException(401, "Cookie not good anymore");
+                        } else {
+                            res.clearCookie("token");
+                            throw new HttpException(401, "Unauthorized");
+                            /* res.status(401).send("Unauthorized"); */
+                        }
                     }
-     
-                    console.log("cookie string", cookiesString);
-                    const cookieObj = await parseCookie(cookiesString) as TokenCookie;
 
-                    console.log("Cookie obj", cookieObj);
-     
-                    
-                         
-                    jsonwebtoken.verify(cookieObj.token, process.env.JWT_SECRET,  (err, decoded) => {
-                         
-                         if(err){
-                              
-                              if(err instanceof TokenExpiredError){
-                                   /* res.status(401).send("Cookie not good anymore"); */
-                                   throw new HttpException(401, "Cookie not good anymore");
-                              } else{
-                                   res.clearCookie("token");
-                                   throw new HttpException(401, "Unauthorized");
-                                   /* res.status(401).send("Unauthorized"); */
-                              }
-     
-                         }
-     
-                         if(typeof decoded !== "string" && decoded){
-                              req.userID = decoded.id;
-                         } else {
-                              throw new HttpException(500, "Jwt payload missing or not valid");
-                         }
-     
-     
-                         next();
-                    });
-     
-                    
-     
-     
-               } else{
-                    throw new HttpException(500, "Env file isn't set up properly");
-               }
-               
-     
-          } catch(error){
-               console.log("auth error here");
-               next(error);
-          }
-     }
+                    if (typeof decoded !== "string" && decoded) {
+                        req.userID = decoded.id;
+                    } else {
+                        throw new HttpException(500, "Jwt payload missing or not valid");
+                    }
 
-
-     
-
-}
+                    next();
+                });
+            } else {
+                throw new HttpException(500, "Env file isn't set up properly");
+            }
+        } catch (error) {
+            console.log("auth error here");
+            next(error);
+        }
+    }
+};

@@ -1,8 +1,8 @@
-import { parseCookie } from "../../utility/cookies.utility"
+import { parseUrl } from "next/dist/shared/lib/router/utils/parse-url";
+import { parseCookie } from "../../utility/cookies.utility";
 
 describe("Testing cookie parser", () => {
     test("It should parse cookie correctly", async () => {
-
         const cookieString = "value1=dasdas;value2=2222;value3=12345";
 
         const parsedCookie = await parseCookie(cookieString);
@@ -18,5 +18,5 @@ describe("Testing cookie parser", () => {
         expect(parsedCookie.value2).toBe("2222");
 
         expect(parsedCookie.value3).toBe("12345");
-    })
-})
+    });
+});

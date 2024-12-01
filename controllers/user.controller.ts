@@ -4,26 +4,24 @@ import { HttpException } from "../Types/error";
 
 //user controller
 export const getUsersController = async (req: Request, res: Response, next: NextFunction) => {
-    try{
+    try {
         const users = await getAllUsers();
         res.json(users);
-    }catch(error){
+    } catch (error) {
         next(error);
     }
-}
+};
 
 export const getUserController = async (req: Request, res: Response, next: NextFunction) => {
-    try{
+    try {
         const userId = req.userID;
-        console.log(userId);
-        if(!userId){
+        if (!userId) {
             throw new HttpException(401, "Unauthorized");
-        }else {
+        } else {
             const userData = await getUser(userId);
             res.status(200).send(userData);
         }
-        
-    }catch(error){
+    } catch (error) {
         next(error);
     }
-}
+};
